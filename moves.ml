@@ -45,7 +45,7 @@ let possible_moves = function
   | Sente, _ -> mv_sente_gold
   | Gote, _ -> mv_gote_gold
 
-let check_no_slide (board : cell array array) side piece i j (dx, dy) =
+let check_no_slide (board : cell array array) side piece (i, j) (dx, dy) =
   (* May throw 'Invalid_argument' if move is out of the board's borders *)
   let ni = i + dx in
   let nj = j + dy in
@@ -74,47 +74,47 @@ let check_no_slide (board : cell array array) side piece i j (dx, dy) =
 	      [{what = piece; start = st; finish = fn}]
 	end (* possible promotion *)
 	  
-let rec check_slide_r found board side piece i j (dx, dy) =
+let rec check_slide_r found board side piece (i, j) (dx, dy) =
   (* the 'start' value in returned moves is wrong *)
   try
-    let one = check_no_slide board side piece i j (dx, dy) in
+    let one = check_no_slide board side piece (i, j) (dx, dy) in
     let ni = i + dx in
     let nj = j + dy in
     let res = one::found in
     if board.(ni).(nj) = None
-    then check_slide_r res board side piece (i+dx) (j+dy) (dx, dy)
+    then check_slide_r res board side piece (i + dx, j + dy) (dx, dy)
     else res
   with Invalid_argument _ -> found
 
-let check_slide board side piece i j delta =
+let check_slide board side piece (i, j) delta =
   let fix_move m =
     match m.start with
       | Some (x, y) when (x = i && y = j) -> m
       | _ -> {what = piece; start = Some (i, j); finish = m.finish } in
-  let sliding_moves = check_slide_r [] board side piece i j delta in
+  let sliding_moves = check_slide_r [] board side piece (i, j) delta in
   List.map fix_move (List.flatten sliding_moves)
 
-let check_one (board : cell array array) side piece i j mv =
+let check_one (board : cell array array) side piece point mv =
   match mv with
     | (JustOne, (dx, dy)) ->
       begin
-	try check_no_slide board side piece i j (dx, dy)
+	try check_no_slide board side piece point (dx, dy)
 	with Invalid_argument _ -> [] (* the move is out of the board's borders *)
       end
-    | (Slide, (dx, dy)) -> check_slide board side piece i j (dx, dy)
+    | (Slide, (dx, dy)) -> check_slide board side piece point (dx, dy)
 
-let rec check_opm_r found (board : cell array array) side piece i j pm =
+let rec check_opm_r found (board : cell array array) side piece point pm =
     match pm with
       | [] -> found
       | hd :: tl ->
-	check_opm_r ((check_one board side piece i j hd) @ found) board side piece i j tl
+	check_opm_r ((check_one board side piece point hd) @ found) board side piece point tl
 
-let check_opm (board : cell array array) side piece i j pm =
-  check_opm_r [] board side piece i j pm 
+let check_opm (board : cell array array) side piece point pm =
+  check_opm_r [] board side piece point pm 
 ;;
-let gopm (board : cell array array) side piece i j =
-  let pm = possible_moves piece in
-  check_opm board side piece i j pm
+let moves_for_piece brd side piece point =
+  (* generate the list of all moves of the given piece at the given point *)
+  check_opm brd side piece point (possible_moves piece)
 
 let generate_drops hand side point =
   (* generate the list of all possible drops to the 'point' square *)
@@ -134,7 +134,7 @@ let rec find_all_moves_r acc brd (i, j) hand side =
 	let drops = generate_drops hand side (i, j) in
 	find_all_moves_r (drops @ acc) brd next hand side
     | Some (s, p) when s = side ->
-      let mvs = gopm brd side (s, p) i j in
+      let mvs = moves_for_piece brd side (s, p) (i, j) in
       find_all_moves_r (mvs @ acc) brd next hand side
     (* we can move pieces only of own color *)
     | _ -> find_all_moves_r acc brd next hand side
