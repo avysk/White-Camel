@@ -20,6 +20,9 @@ type position = {
 (* function composition *)
 let ($) f g x = f (g x)
 
+(* constructing tuples of list *)
+let (@*) elt lst = List.map (fun t -> (elt, t)) lst
+
 (* -------------------- Position handling --------------------*)
 let init_position plist stm shd ghd =
   let ar = Array.make_matrix 5 5 None in
@@ -31,6 +34,59 @@ let init_position plist stm shd ghd =
     sente_hand = shd ;
     gote_hand = ghd ;
   }
+
+(* -------------------- Moves -------------------- *)
+
+type move = {
+  what : piece ;
+  start : (int * int) option ;
+  finish : int * int ;
+}
+
+type sliding = Slide | JustOne
+
+let m_sente = [(0, 1)]
+let m_gote = [(0, -1)]
+let m_sente_diag = [(-1, 1); (1, 1)]
+let m_gote_diag = [(-1, -1); (1, -1)]
+let m_sides = [(-1, 0); (1, 0)]
+let m_diag = m_sente_diag @ m_gote_diag
+let m_raw = m_sente @ m_gote @ m_sides
+
+let mv_sente_pawn = JustOne @* m_sente
+let mv_gote_pawn = JustOne @* m_gote
+let mv_king = JustOne @* (m_diag @ m_raw)
+let mv_sente_gold = JustOne @* (m_raw @ m_sente_diag)
+let mv_gote_gold =  JustOne @* (m_raw @ m_gote_diag)
+let mv_sente_silver = JustOne @* (m_diag @ m_sente)
+let mv_gote_silver = JustOne @* (m_diag @ m_gote)
+let mv_bishop = Slide @* m_diag
+let mv_rook = Slide @* m_raw
+(*
+let mv_sente_tokin = mv_sente_gold
+let mv_gote_tokin = mv_gote_gold
+let mv_sente_golds = mv_sente_gold
+let mv_gote_golds = mv_gote_gold
+*)
+let mv_dragonking = mv_bishop @ (JustOne @* m_raw)
+let mv_dragonhorse = mv_rook @ (JustOne @* m_diag)
+
+let possible_moves = function
+  | Sente, Pawn -> mv_sente_pawn
+  | Gote, Pawn -> mv_gote_pawn
+  | _, King -> mv_king
+  | Sente, Silver -> mv_sente_silver
+  | Gote, Silver -> mv_gote_silver
+  | _, Bishop -> mv_bishop
+  | _, Rook -> mv_rook
+  | _, DragonKing -> mv_dragonking
+  | _, DragonHorse -> mv_dragonhorse
+(* what's left: gold generals, tokins and promoted silvers,
+   all move as gold generals *)
+  | Sente, _ -> mv_sente_gold
+  | Gote, _ -> mv_gote_gold
+
+;; (* ---------------------------------------- *)
 
 let print_position pos =
   let piece_t_to_string = function
