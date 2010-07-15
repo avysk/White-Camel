@@ -126,9 +126,8 @@ let incr = function
   | (4, j) -> (0, j + 1)
   | (i, j) -> (i + 1, j)
 
-let rec find_all_moves_r acc brd (i, j) hand side = 
-  if j = 5 then acc
-  else 
+let rec find_all_moves_r acc brd (i, j) hand side =
+  try
     let next = incr (i, j) in
     match brd.(i).(j) with
       | None ->
@@ -139,6 +138,7 @@ let rec find_all_moves_r acc brd (i, j) hand side =
       find_all_moves_r (mvs @ acc) brd next hand side
     (* we can move pieces only of own color *)
     | _ -> find_all_moves_r acc brd next hand side
+  with Invalid_argument _ -> acc (* We came to the 6th row, so finished *)
 
 let find_all_moves pos side =
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
