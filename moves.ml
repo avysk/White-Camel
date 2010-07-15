@@ -128,15 +128,17 @@ let incr = function
 
 let rec find_all_moves_r acc brd (i, j) hand side = 
   if j = 5 then acc
-  else match brd.(i).(j) with
-    | None ->
-      let drops = generate_drops hand side i j in
-      find_all_moves_r (drops @ acc) brd (incr (i, j)) hand side
+  else 
+    let next = incr (i, j) in
+    match brd.(i).(j) with
+      | None ->
+	let drops = generate_drops hand side i j in
+	find_all_moves_r (drops @ acc) brd next hand side
     | Some (s, p) when s = side ->
       let mvs = gopm brd side (s, p) i j in
-      find_all_moves_r (mvs @ acc) brd (incr (i, j)) hand side
+      find_all_moves_r (mvs @ acc) brd next hand side
     (* we can move pieces only of own color *)
-    | _ -> find_all_moves_r acc brd (incr (i, j)) hand side
+    | _ -> find_all_moves_r acc brd next hand side
 
 let find_all_moves pos side =
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
