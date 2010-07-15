@@ -116,10 +116,10 @@ let gopm (board : cell array array) side piece i j =
   let pm = possible_moves piece in
   check_opm board side piece i j pm
 
-let generate_drops hand side i j =
-  (* generate the list of all possible drops to (i,j) square *)
+let generate_drops hand side point =
+  (* generate the list of all possible drops to the 'point' square *)
   let drop1 pc =
-    { what = (side, pc); start = None; finish = (i, j)} in
+    { what = (side, pc); start = None; finish = point} in
   List.map drop1 hand
 
 let incr = function
@@ -131,7 +131,7 @@ let rec find_all_moves_r acc brd (i, j) hand side =
     let next = incr (i, j) in
     match brd.(i).(j) with
       | None ->
-	let drops = generate_drops hand side i j in
+	let drops = generate_drops hand side (i, j) in
 	find_all_moves_r (drops @ acc) brd next hand side
     | Some (s, p) when s = side ->
       let mvs = gopm brd side (s, p) i j in
