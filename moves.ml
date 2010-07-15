@@ -94,7 +94,7 @@ let check_slide board side piece (i, j) delta =
   let sliding_moves = check_slide_r [] board side piece (i, j) delta in
   List.map fix_move (List.flatten sliding_moves)
 
-let check_one (board : cell array array) side piece point mv =
+let check_one_dir (board : cell array array) side piece point mv =
   match mv with
     | (JustOne, (dx, dy)) ->
       begin
@@ -103,15 +103,10 @@ let check_one (board : cell array array) side piece point mv =
       end
     | (Slide, (dx, dy)) -> check_slide board side piece point (dx, dy)
 
-let rec calculate_moves acc brd side piece point pm =
-    match pm with
-      | [] -> acc
-      | hd :: tl ->
-	calculate_moves ((check_one brd side piece point hd) @ acc) brd side piece point tl
-
 let moves_for_piece brd side piece point =
   (* generate the list of all moves of the given piece at the given point *)
-  calculate_moves [] brd side piece point (possible_moves piece)
+  let pm = possible_moves piece in
+  List.flatten (List.map (fun x -> check_one_dir brd side piece point x) pm)
 
 let generate_drops hand side point =
   (* generate the list of all possible drops to the 'point' square *)
