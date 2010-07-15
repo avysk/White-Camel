@@ -115,30 +115,28 @@ let check_opm (board : cell array array) side piece i j pm =
 let gopm (board : cell array array) side piece i j =
   let pm = possible_moves piece in
   check_opm board side piece i j pm
-;;
+
 let generate_drops hand side i j =
-  let generate_one pc =
+  (* generate the list of all possible drops to (i,j) square *)
+  let drop1 pc =
     { what = (side, pc); start = None; finish = (i, j)} in
-  List.map generate_one hand
-;;
-let rec find_all_moves_r found brd (i, j) hand side = 
-  if j == 5 then found
-  else let incr (i, j) =
-	 begin
-	   match (i, j) with
-	     | (4, _) -> (0, j+1)
-	     | _ -> (i+1, j)
-	 end
-       in
-       match brd.(i).(j) with
- 	 | None ->
-	   let drops = generate_drops hand side i j in
-	   find_all_moves_r (drops @ found) brd (incr (i, j)) hand side
-	 | Some (s, p) when s = side ->
-	   let mvs = gopm brd side (s, p) i j in
-	   find_all_moves_r (mvs @ found) brd (incr (i, j)) hand side
-	 (* and if not our color... *)
-	 | _ -> find_all_moves_r found brd (incr (i, j)) hand side
+  List.map drop1 hand
+
+let incr = function
+  | (4, j) -> (0, j + 1)
+  | (i, j) -> (i + 1, j)
+
+let rec find_all_moves_r acc brd (i, j) hand side = 
+  if j = 5 then acc
+  else match brd.(i).(j) with
+    | None ->
+      let drops = generate_drops hand side i j in
+      find_all_moves_r (drops @ acc) brd (incr (i, j)) hand side
+    | Some (s, p) when s = side ->
+      let mvs = gopm brd side (s, p) i j in
+      find_all_moves_r (mvs @ acc) brd (incr (i, j)) hand side
+    (* we can move pieces only of own color *)
+    | _ -> find_all_moves_r acc brd (incr (i, j)) hand side
 
 let find_all_moves pos side =
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
