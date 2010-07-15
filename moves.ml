@@ -103,18 +103,15 @@ let check_one (board : cell array array) side piece point mv =
       end
     | (Slide, (dx, dy)) -> check_slide board side piece point (dx, dy)
 
-let rec check_opm_r found (board : cell array array) side piece point pm =
+let rec calculate_moves acc brd side piece point pm =
     match pm with
-      | [] -> found
+      | [] -> acc
       | hd :: tl ->
-	check_opm_r ((check_one board side piece point hd) @ found) board side piece point tl
+	calculate_moves ((check_one brd side piece point hd) @ acc) brd side piece point tl
 
-let check_opm (board : cell array array) side piece point pm =
-  check_opm_r [] board side piece point pm 
-;;
 let moves_for_piece brd side piece point =
   (* generate the list of all moves of the given piece at the given point *)
-  check_opm brd side piece point (possible_moves piece)
+  calculate_moves [] brd side piece point (possible_moves piece)
 
 let generate_drops hand side point =
   (* generate the list of all possible drops to the 'point' square *)
