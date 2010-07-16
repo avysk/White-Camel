@@ -73,7 +73,7 @@ let possible_moves = function
 
 let check_step (brd, side, piece, (i, j)) (dx, dy) =
 
-  (* Returns the list of the moves the given piece may do
+  (* Return the list of the moves the given piece may do
    * from (i, j) point by moving one step along (dx, dy) vector.
    * Raises 'Invalid argument' when the move is out of the board's borders.
    * Raises 'Not found' when the move is blocked by own piece.
@@ -103,7 +103,7 @@ let check_step (brd, side, piece, (i, j)) (dx, dy) =
           
 let rec check_slide_r acc (brd, side, piece, (i, j)) (dx, dy) =
 
-  (* Constructs the list of all sliding moves of the given piece from (i, j)
+  (* Construct the list of all sliding moves of the given piece from (i, j)
    * along (dx, dy) vector.  NB: the 'start' value in returned moves
    * may be wrong since it may not be the real start value for the move.
    * So the 'start' value should be fixed by calling function. *)
@@ -123,7 +123,7 @@ let rec check_slide_r acc (brd, side, piece, (i, j)) (dx, dy) =
 
 let check_slide situation delta =
 
-  (* Returns the list of all sliding moves in the given situation
+  (* Return the list of all sliding moves in the given situation
    * (meaning given piece on the board) along delta vector *)
 
   let (_, _, piece, (i, j)) = situation in
@@ -137,9 +137,9 @@ let check_slide situation delta =
   List.map fix_move (List.flatten sliding_moves)
 
 
-let check_one_dir situation mv =
+let check_one_rule situation mv =
 
-  (* Returns the list of moves for the given situation (piece on board)
+  (* Return the list of moves for the given situation (piece on board)
    * according to the move rule mv *)
 
   match mv with
@@ -155,36 +155,51 @@ let check_one_dir situation mv =
     | (Slide, delta) -> check_slide situation delta
 
 let moves_for_piece situation =
-  (* generate the list of all moves of the given piece at the given point *)
+
+  (* Generate the list of all moves of the given piece at the given point.
+   * Move validity (check situation) is not checked. *)
+
   let (_, _, piece, _) = situation in
   let pm = possible_moves piece in
-  List.flatten (List.map (fun x -> check_one_dir situation x) pm)
+  List.flatten (List.map (fun x -> check_one_rule situation x) pm)
 
 let generate_drops hand side point =
-  (* generate the list of all possible drops to the 'point' square *)
-  let drop1 pc =
-    { what = (side, pc); start = None; finish = point} in
+
+  (* Generate the list of all possible drops from the given hand
+   * to the 'point' square. Move validity (check situation, pawn drops)
+   * is not checked. *)
+
+  let drop1 piece = { what = (side, piece); start = None; finish = point} in
   List.map drop1 hand
 
-let incr = function
-  | (4, j) -> (0, j + 1)
-  | (i, j) -> (i + 1, j)
-
 let rec find_all_moves_r acc brd (i, j) hand side =
+
+  (* Recursive helper function:
+   * Generate all moves in the given position for the given side to move.
+   * The validity of moves (check situation, pawn drops) is not checked.
+   * Includes but does not force promotions. *)
+
   try
     let next = incr (i, j) in
-    match brd.(i).(j) with
+    match brd.(i).(j) with (* may raise Invalid_argument *)
       | None ->
         let drops = generate_drops hand side (i, j) in
         find_all_moves_r (drops @ acc) brd next hand side
-    | Some (s, p) when s = side ->
-      let mvs = moves_for_piece (brd, side, (s, p), (i, j)) in
-      find_all_moves_r (mvs @ acc) brd next hand side
-    (* we can move pieces only of own color *)
-    | _ -> find_all_moves_r acc brd next hand side
+      | Some (s, p) when s = side ->
+	let mvs = moves_for_piece (brd, side, (s, p), (i, j)) in
+	find_all_moves_r (mvs @ acc) brd next hand side
+	(* we can move pieces only of own color *)
+      | _ -> find_all_moves_r acc brd next hand side
   with Invalid_argument _ -> acc (* We came to the 6th row, so finished *)
 
+
 let find_all_moves pos side =
+
+  (* Externally visible function.
+   * Generate all moves in the given position for the given side to move.
+   * The validity of moves (check situation, pawn drops) is not checked.
+   * Includes but does not force promotions. *)
+
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
   find_all_moves_r [] pos.board (0, 0) hand side
 
