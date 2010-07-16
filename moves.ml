@@ -10,25 +10,51 @@ type move = {
 
 type _sliding = Slide | JustOne
 
+(* "Forward" for sente side *)
 let m_sente = [(0, 1)]
+(* "Forward" for gote side *)
 let m_gote = [(0, -1)]
+(* "Forward diagonals" for sente side *)
 let m_sente_diag = [(-1, 1); (1, 1)]
+(* "Forward diagonals" for gote side *)
 let m_gote_diag = [(-1, -1); (1, -1)]
+(* "Sideways" *)
 let m_sides = [(-1, 0); (1, 0)]
+(* "Diagonally" *)
 let m_diag = m_sente_diag @ m_gote_diag
+(* "Vertically or horizontally" *)
 let m_raw = m_sente @ m_gote @ m_sides
 
+(* '@*' operator constructs the list of tuples as direct product of
+   the element and the list *)
+
+(* Pawn moves one step forward *)
 let mv_sente_pawn = JustOne @* m_sente
 let mv_gote_pawn = JustOne @* m_gote
+
+(* King moves one step vertically or horizontaly or diagonaly *)
 let mv_king = JustOne @* (m_diag @ m_raw)
+
+(* Gold general moves vertically or horizontally or forward diagonally *)
 let mv_sente_gold = JustOne @* (m_raw @ m_sente_diag)
 let mv_gote_gold =  JustOne @* (m_raw @ m_gote_diag)
+
+(* Silver general moves diagonally and forward *)
 let mv_sente_silver = JustOne @* (m_diag @ m_sente)
 let mv_gote_silver = JustOne @* (m_diag @ m_gote)
+
+(* Bishop moves diagnally, sliding *)
 let mv_bishop = Slide @* m_diag
+
+(* Rook moves horizontally or vertiacally, sliding *)
 let mv_rook = Slide @* m_raw
-let mv_dragonking = mv_bishop @ (JustOne @* m_raw)
-let mv_dragonhorse = mv_rook @ (JustOne @* m_diag)
+
+(* Dragon horse (promoted bishop) moves like bishop or one step
+   horizontally or vertically *)
+let mv_dragonhorse = mv_bishop @ (JustOne @* m_raw)
+
+(* Dragon king (promoted rook) moves like rook or one step diagonally *)
+let mv_dragonking = mv_rook @ (JustOne @* m_diag)
 
 let possible_moves = function
   | Sente, Pawn -> mv_sente_pawn
@@ -38,75 +64,81 @@ let possible_moves = function
   | Gote, Silver -> mv_gote_silver
   | _, Bishop -> mv_bishop
   | _, Rook -> mv_rook
-  | _, DragonKing -> mv_dragonking
   | _, DragonHorse -> mv_dragonhorse
+  | _, DragonKing -> mv_dragonking
 (* what's left: gold generals, tokins and promoted silvers,
-   all move as gold generals *)
+   all of them move as gold generals *)
   | Sente, _ -> mv_sente_gold
   | Gote, _ -> mv_gote_gold
 
-let check_no_slide (board : cell array array) side piece (i, j) (dx, dy) =
-  (* May throw 'Invalid_argument' if move is out of the board's borders *)
-  let ni = i + dx in
-  let nj = j + dy in
-  let t = board.(ni).(nj) in
+let check_step (brd, side, piece, (i, j)) (dx, dy) =
+  (* Returns the list of the moves the given piece may do
+   * from (i, j) point by moving one step along (dx, dy) vector.
+   * Raises 'Invalid argument' when the move is out of the board's borders.
+   * Raises 'Not found' when the move is blocked by own piece.
+   * Otherwise returns the list of one or two (when promotion is available)
+   * moves. *)
+  let ni, nj = i + dx, j + dy in
+  let t = brd.(ni).(nj) in (* may raise Invalid_argument here *)
   match t with
-    | Some (x, _) when x = side -> [] (* cannot eat own piece *)
+    | Some (x, _) when x = side -> raise Not_found (* cannot eat own piece *)
     | _ ->
       let st = Some (i, j) in
       let fn = (ni, nj) in
-      if (side = Sente && nj < 4 && j < 4) || (side = Gote && nj > 0 && j > 0)
-      then (* the move is not to or from promotion area *)
-	[{what = piece; start = st; finish = fn}]
-      else (* promotion is possible *)
-	begin
-	  match snd piece with
-	    | Pawn ->
-	      [{what = (side, Tokin); start = st; finish = fn}]
-	    | Silver -> (* It may make sense not to promote silver general *)
-	      [{what = (side, Silver); start = st; finish = fn};
-	       {what = (side, GoldS); start = st; finish = fn}]
-	    | Bishop ->
-	      [{what = (side, DragonKing); start = st; finish = fn}]
-	    | Rook ->
-	      [{what = (side, DragonHorse); start = st; finish = fn}]
-	    | _ -> (* nothing else can be promoted *)
-	      [{what = piece; start = st; finish = fn}]
-	end (* possible promotion *)
-	  
-let rec check_slide_r found board side piece (i, j) (dx, dy) =
-  (* the 'start' value in returned moves is wrong *)
-  try
-    let one = check_no_slide board side piece (i, j) (dx, dy) in
-    let ni = i + dx in
-    let nj = j + dy in
-    let res = one::found in
-    if board.(ni).(nj) = None
-    then check_slide_r res board side piece (i + dx, j + dy) (dx, dy)
-    else res
-  with Invalid_argument _ -> found
+      {what = piece; start = st; finish = fn} ::
+	  if side = Sente && nj < 4 && j < 4 || side = Gote && nj > 0 && j > 0
+	  then [] (* the move is not to or from promotion area *)
+	  else match snd piece with (* promotion is possible *)
+            | Pawn -> [{what = (side, Tokin); start = st; finish = fn}]
+            | Silver -> [{what = (side, GoldS); start = st; finish = fn}]
+            | Bishop -> [{what = (side, DragonHorse); start = st; finish = fn}]
+            | Rook -> [{what = (side, DragonKing); start = st; finish = fn}]
+            | _ -> [] (* nothing else can be promoted *)
+          
+let rec check_slide_r acc (brd, side, piece, (i, j)) (dx, dy) =
+  (* Constructs the list of all sliding moves of the given piece from (i, j)
+   * along (dx, dy) vector.  NB: the 'start' value in returned moves
+   * may be wrong since it may not be the real start value for the move.
+   * So the 'start' value should be fixed by calling function. *)
 
-let check_slide board side piece (i, j) delta =
+  try let one = check_step (brd, side, piece, (i, j)) (dx, dy) in
+      let acc' = one :: acc in
+      let ni, nj = i + dx, j + dy in
+      if brd.(ni).(nj) = None
+      then check_slide_r acc' (brd, side, piece, (ni, nj)) (dx, dy)
+      else acc'
+  with
+    (* If we moved past the border of the board , stop searching. *)
+    | Invalid_argument _ -> acc
+    (* If further moves are blocked by own piece, stop searching. *)
+    | Not_found _ -> acc
+
+
+let check_slide situation delta =
+  let (_, _, piece, (i, j)) = situation in
   let fix_move m =
     match m.start with
-      | Some (x, y) when (x = i && y = j) -> m
+      | Some (x, y) when x = i && y = j -> m
       | _ -> {what = piece; start = Some (i, j); finish = m.finish } in
-  let sliding_moves = check_slide_r [] board side piece (i, j) delta in
+  let sliding_moves = check_slide_r [] situation delta in
   List.map fix_move (List.flatten sliding_moves)
 
-let check_one_dir (board : cell array array) side piece point mv =
+let check_one_dir situation mv =
   match mv with
-    | (JustOne, (dx, dy)) ->
+    | (JustOne, delta) ->
       begin
-	try check_no_slide board side piece point (dx, dy)
-	with Invalid_argument _ -> [] (* the move is out of the board's borders *)
+        try check_step situation delta
+        with
+	  | Invalid_argument _ -> [] (* the move is out of the board's borders *)
+	  | Not_found _ -> [] (* the move is blocked by own piece *)
       end
-    | (Slide, (dx, dy)) -> check_slide board side piece point (dx, dy)
+    | (Slide, delta) -> check_slide situation delta
 
-let moves_for_piece brd side piece point =
+let moves_for_piece situation =
   (* generate the list of all moves of the given piece at the given point *)
+  let (_, _, piece, _) = situation in
   let pm = possible_moves piece in
-  List.flatten (List.map (fun x -> check_one_dir brd side piece point x) pm)
+  List.flatten (List.map (fun x -> check_one_dir situation x) pm)
 
 let generate_drops hand side point =
   (* generate the list of all possible drops to the 'point' square *)
@@ -123,10 +155,10 @@ let rec find_all_moves_r acc brd (i, j) hand side =
     let next = incr (i, j) in
     match brd.(i).(j) with
       | None ->
-	let drops = generate_drops hand side (i, j) in
-	find_all_moves_r (drops @ acc) brd next hand side
+        let drops = generate_drops hand side (i, j) in
+        find_all_moves_r (drops @ acc) brd next hand side
     | Some (s, p) when s = side ->
-      let mvs = moves_for_piece brd side (s, p) (i, j) in
+      let mvs = moves_for_piece (brd, side, (s, p), (i, j)) in
       find_all_moves_r (mvs @ acc) brd next hand side
     (* we can move pieces only of own color *)
     | _ -> find_all_moves_r acc brd next hand side
@@ -135,3 +167,5 @@ let rec find_all_moves_r acc brd (i, j) hand side =
 let find_all_moves pos side =
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
   find_all_moves_r [] pos.board (0, 0) hand side
+
+(* -*- mode: tuareg; indent-tabs-mode: nil -*- *)
