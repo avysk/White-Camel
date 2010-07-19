@@ -1,75 +1,7 @@
 open Utils
 open Types
 open Position
-
-type move = {
-  what : piece ;
-  start : (int * int) option ;
-  finish : int * int ;
-}
-
-type _sliding = Slide | Step
-
-(* "Forward" for sente side *)
-let m_sente = [(0, 1)]
-(* "Forward" for gote side *)
-let m_gote = [(0, -1)]
-(* "Forward diagonals" for sente side *)
-let m_sente_diag = [(-1, 1); (1, 1)]
-(* "Forward diagonals" for gote side *)
-let m_gote_diag = [(-1, -1); (1, -1)]
-(* "Sideways" *)
-let m_sides = [(-1, 0); (1, 0)]
-(* "Diagonally" *)
-let m_diag = m_sente_diag @ m_gote_diag
-(* "Vertically or horizontally" *)
-let m_raw = m_sente @ m_gote @ m_sides
-
-(* '@*' operator constructs the list of tuples as direct product of
-   the element and the list *)
-
-(* Pawn moves one step forward *)
-let mv_sente_pawn = Step @* m_sente
-let mv_gote_pawn = Step @* m_gote
-
-(* King moves one step vertically or horizontaly or diagonaly *)
-let mv_king = Step @* (m_diag @ m_raw)
-
-(* Gold general moves vertically or horizontally or forward diagonally *)
-let mv_sente_gold = Step @* (m_raw @ m_sente_diag)
-let mv_gote_gold =  Step @* (m_raw @ m_gote_diag)
-
-(* Silver general moves diagonally and forward *)
-let mv_sente_silver = Step @* (m_diag @ m_sente)
-let mv_gote_silver = Step @* (m_diag @ m_gote)
-
-(* Bishop moves diagnally, sliding *)
-let mv_bishop = Slide @* m_diag
-
-(* Rook moves horizontally or vertiacally, sliding *)
-let mv_rook = Slide @* m_raw
-
-(* Dragon horse (promoted bishop) moves like bishop or one step
-   horizontally or vertically *)
-let mv_dragonhorse = mv_bishop @ (Step @* m_raw)
-
-(* Dragon king (promoted rook) moves like rook or one step diagonally *)
-let mv_dragonking = mv_rook @ (Step @* m_diag)
-
-let possible_moves = function
-  | Sente, Pawn -> mv_sente_pawn
-  | Gote, Pawn -> mv_gote_pawn
-  | _, King -> mv_king
-  | Sente, Silver -> mv_sente_silver
-  | Gote, Silver -> mv_gote_silver
-  | _, Bishop -> mv_bishop
-  | _, Rook -> mv_rook
-  | _, DragonHorse -> mv_dragonhorse
-  | _, DragonKing -> mv_dragonking
-(* what's left: gold generals, tokins and promoted silvers,
-   all of them move as gold generals *)
-  | Sente, _ -> mv_sente_gold
-  | Gote, _ -> mv_gote_gold
+open Rules
 
 let check_step (brd, side, piece, (i, j)) (dx, dy) =
 
