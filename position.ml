@@ -1,3 +1,4 @@
+open Utils
 open Types
 open Rules
 
@@ -13,35 +14,36 @@ type position = {
 }
 
 let under_check_close position side =
-  let fw, (kx, ky) = match side with
+  let fw, king = match side with
     | Sente -> 1, position.sente_king
     | Gote -> -1, position.gote_king in
   let side' = other side in
   let brd = position.board in
-  let piece_at x y pcs =
+  let piece_at delta pcs =
     try
       begin
-	match brd.(x).(y) with
+	match brd @@ (king ++ delta) with
 	  | Some (s, p) when s = side' -> List.mem p pcs
 	  | _ -> false
       end
     with Invalid_argument _ -> false in
   (* forward from king *)
-  piece_at kx (ky + fw) forward_attackers ||
-    (* backward from king *)
-    piece_at kx (ky - fw) [King; Gold; Tokin; GoldS; DragonHorse] ||
-    (* sideways from king *)
-    piece_at (kx - 1) ky [King; Gold; Tokin; GoldS; DragonHorse] ||
-    piece_at (kx + 1) ky [King; Gold; Tokin; GoldS; DragonHorse] ||
+  piece_at (0, fw) forward_attackers ||
     (* forward diagonals from king *)
-    piece_at (kx - 1) (ky + fw) [King; Gold; Silver; Tokin; GoldS; DragonKing] ||
-    piece_at (kx + 1) (ky + fw) [King; Gold; Silver; Tokin; GoldS; DragonKing] ||
+    piece_at (-1, fw) forward_diag_attackers ||
+    piece_at (1, fw) forward_diag_attackers ||
+    (* sideways from king *)
+    piece_at (-1, 0) sideways_attackers ||
+    piece_at (1, 0) sideways_attackers ||
+    (* backward from king *)
+    piece_at (0, -fw) backward_attackers ||
     (* backward diagonals from king *)
-    piece_at (kx - 1) (ky - fw) [King; Silver; DragonKing] ||
-    piece_at (kx + 1) (ky - fw) [King; Silver; DragonKing]
+    piece_at (-1, -fw) backward_diag_attackers ||
+    piece_at (1, -fw) backward_diag_attackers
 
 let under_check_far position side =
-  let piece_along dx dy = assert false in
+  let rec piece_along dx dy = assert false
+in
   assert false
 
 let under_check position side =
