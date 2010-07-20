@@ -1,2 +1,0 @@
-open Types
-open Curses

@@ -51,21 +51,6 @@ let print_position pos =
 	| Gote -> "Gote")
   end
 
-let start_position = init_position
-  [(0, 0, (Sente, King));
-   (1, 0, (Sente, Gold));
-   (2, 0, (Sente, Silver));
-   (3, 0, (Sente, Bishop));
-   (4, 0, (Sente, Rook));
-   (0, 1, (Sente, Pawn));
-   (4, 3, (Gote, Pawn));
-   (0, 4, (Gote, Rook));
-   (1, 4, (Gote, Bishop));
-   (2, 4, (Gote, Silver));
-   (3, 4, (Gote, Gold));
-   (4, 4, (Gote, King))]
-  Sente [] []
-
 
 let under_check pos side = assert false
 
