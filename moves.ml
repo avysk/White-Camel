@@ -1,6 +1,5 @@
 open Utils
 open Types
-open Position
 open Rules
 
 let check_step (brd, side, piece, point) delta =
