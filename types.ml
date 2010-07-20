@@ -15,3 +15,15 @@ type move = {
   start : (int * int) option ;
   finish : int * int ;
 }
+
+type hand = piece_t list
+
+type position = {
+  board : board_t ;
+  to_move : side ;
+  sente_hand : hand ;
+  gote_hand : hand ;
+  (* The coordinates of kings are needed often *)
+  sente_king : int * int ;
+  gote_king : int * int ;
+}

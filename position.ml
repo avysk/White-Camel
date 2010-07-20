@@ -2,23 +2,12 @@ open Utils
 open Types
 open Rules
 
-type hand = piece_t list
-type position = {
-  board : board_t ;
-  to_move : side ;
-  sente_hand : hand ;
-  gote_hand : hand ;
-  (* The coordinates of kings are needed often *)
-  sente_king : int * int ;
-  gote_king : int * int ;
-}
-
-let under_check_close position side =
-  let fw, king = match side with
-    | Sente -> 1, position.sente_king
-    | Gote -> -1, position.gote_king in
-  let side' = other side in
-  let brd = position.board in
+let under_check_close brd side' king =
+  (* Checks if the king is attacked via one-step move by some side' piece *)
+  let fw = match side' with
+    (* Meaning of "forward" for the king *)
+    | Sente -> -1
+    | Gote -> 1 in
   let piece_at delta pcs =
     try
       begin
@@ -41,13 +30,37 @@ let under_check_close position side =
     piece_at (-1, -fw) backward_diag_attackers ||
     piece_at (1, -fw) backward_diag_attackers
 
-let under_check_far position side =
-  let rec piece_along dx dy = assert false
-in
-  assert false
+let under_check_far brd side' king =
+  let rec piece_along current delta pcs =
+    try
+      begin
+	let next = current ++ delta in
+	match brd @@ next with
+	  (* If cell is empty, continue search *)
+	  | None -> piece_along next delta pcs
+	  (* If there's a piece in a cell, check if is the one we're searching for *)
+	  | Some (s, p) when s = side' -> List.mem p pcs
+	  (* Piece belonging to the other side block checks *)
+	  | _ -> false
+      end
+    (* If board is over, no attack from this line *)
+    with Invalid_argument _ -> false in
+  piece_along king (0, 1) straight_sliders ||
+    piece_along king (0, -1) straight_sliders ||
+    piece_along king (1, 0) straight_sliders ||
+    piece_along king (-1, 0) straight_sliders ||
+    piece_along king (1, 1) diag_sliders ||
+    piece_along king (-1, 1) diag_sliders ||
+    piece_along king (1, -1) diag_sliders ||
+    piece_along king (-1, -1) diag_sliders
 
 let under_check position side =
-  under_check_close position side || under_check_far position side
+  let king = match side with
+    | Sente -> position.sente_king
+    | Gote -> position.gote_king in
+  let side' = other side in
+  let brd = position.board in
+  under_check_close brd side' king || under_check_far brd side' king
 
 let init_position plist stm shd ghd =
   let ar = Array.make_matrix 5 5 None in

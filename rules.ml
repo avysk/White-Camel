@@ -62,16 +62,22 @@ let possible_moves = function
   | Sente, _ -> mv_sente_gold
   | Gote, _ -> mv_gote_gold
 
-let _find_attackers delta =
-  (* find the kinds of (sente) pieces which can do step along delta *)
+let _find_movers kind_of_move =
+  (* find the kinds of (sente) pieces which can do the given kind of move *)
   let all_pcs = Sente @* all_pieces in
-  let filt = List.mem (Step, delta) $ possible_moves in
+  let filt = List.mem kind_of_move $ possible_moves in
   List.map snd (List.filter filt all_pcs)
+
+let _find_attackers delta = _find_movers (Step, delta)
+
+let _find_sliders delta = _find_movers (Slide, delta)
 
 (* The following listn are calculated only once, to avoid hardcoding the rules
  * of the game in one more place. The lists are visible outside of this file. *)
 let forward_attackers = _find_attackers (0, 1)
 let backward_attackers = _find_attackers (0, -1)
-let forward_diag_attackers = _find_attackers (-1, 1) @ (_find_attackers (1, 1))
-let backward_diag_attackers = _find_attackers (-1, -1) @ (_find_attackers (1, -1))
-let sideways_attackers = _find_attackers (-1, 0) @ (_find_attackers (1, 0))
+let forward_diag_attackers = _find_attackers (1, 1)
+let backward_diag_attackers = _find_attackers (-1, -1)
+let sideways_attackers = _find_attackers (1, 0)
+let straight_sliders = _find_sliders (0, 1)
+let diag_sliders = _find_sliders (1, 1)
