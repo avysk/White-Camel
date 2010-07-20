@@ -16,3 +16,6 @@ let (++) (a, b) (c, d) = (a + c, b + d)
 
 (* accessing matrix *)
 let (@@) m (x, y) = m.(x).(y)
+
+let copy_board brd =
+  Array.init 5 (fun i -> Array.copy brd.(i))

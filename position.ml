@@ -74,3 +74,24 @@ let init_position plist stm shd ghd =
     sente_king = (0, 0) ;
     gote_king = (4, 4) ;
   }
+
+let apply_move position move =
+  let (pc, st, fn) = move in
+  let brd = position.board in
+  let mv = position.to_move in
+  let shand = position.sente_hand in
+  let ghand = position.gote_hand in
+  let sking = position.sente_king in
+  let gking = position.gote_king in
+  match st with
+    (* drop move *)
+    | None -> assert false
+    (* normal move *)
+    | _ ->
+      begin
+	match pc with
+	  (* king's move *)
+	  | (side, King) -> assert false
+	  (* other move *)
+	  | _  -> assert false
+      end
