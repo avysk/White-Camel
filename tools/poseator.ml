@@ -128,7 +128,8 @@ type keybindings = {
   up : int ;
   down : int ;
   left : int ;
-  right : int 
+  right : int ;
+  switch_color : int
 }
 
 let cmd = {
@@ -136,7 +137,8 @@ let cmd = {
   up = int_of_char 'k' ;
   down = int_of_char 'j' ;
   left = int_of_char 'h' ;
-  right = int_of_char 'l'
+  right = int_of_char 'l' ;
+  switch_color = int_of_char 'c'
 }
 
 exception Quit
@@ -154,6 +156,16 @@ let rec mainloop () =
 	  update_cursor ((cursor.x + 1) mod 5) cursor.y
 	| c when c = cmd.left ->
 	  update_cursor ((cursor.x + 4) mod 5) cursor.y
+	| c when c = cmd.switch_color ->
+	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
+	  begin
+	    match pc with
+	      | None -> let _ = flash () in ()
+	      | Some (s, p) when p = King -> let _ = flash () in ()
+	      | Some (s, p) ->
+		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
+		draw_position ()
+	  end
 	| _ -> () in
     mainloop()
   with Quit _ -> ()
