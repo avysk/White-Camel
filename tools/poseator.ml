@@ -147,6 +147,7 @@ let draw_position () =
   ()
 
 exception Quit
+exception Impossible
 
 let rec mainloop () =
   try
@@ -165,8 +166,8 @@ let rec mainloop () =
 	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
 	  begin
 	    match pc with
-	      | None -> let _ = flash () in ()
-	      | Some (s, p) when p = King -> let _ = flash () in ()
+	      | None -> raise Impossible
+	      | Some (s, p) when p = King -> raise Impossible
 	      | Some (s, p) ->
 		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
 		draw_position ()
@@ -175,12 +176,12 @@ let rec mainloop () =
 	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
 	  begin
 	    match pc with
-	      | None -> let _ = flash () in ()
+	      | None -> raise Impossible
 	      | Some (s, p) ->
 		try
 		  let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
 		  draw_position ()
-		with Cannot _ -> let _ = flash () in ()
+		with Cannot _ -> raise Impossible
 	  end
 	| c when c = cmd.switch_move ->
 	  let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
@@ -188,7 +189,7 @@ let rec mainloop () =
 	| c when c = cmd.take_or_place ->
 	  begin
 	    match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
-	      | None, None -> let _ = flash () in ()
+	      | None, None -> raise Impossible
 	      | None, p ->
 		let _ =
 		  begin
@@ -203,12 +204,14 @@ let rec mainloop () =
 		    !cur_pos.Types.board.(cursor.x).(cursor.y) <- p
 		  end in
 		draw_position ()
-	      | _, _ -> let _ = flash () in ()
+	      | _, _ -> raise Impossible
 	  end
-	| _ -> let _ = flash () in ()
+	| _ -> raise Impossible
     in
-    mainloop()
-  with Quit _ -> ()
+    mainloop ()
+  with
+    | Impossible _ -> let _ = flash () in mainloop ()
+    | Quit _ -> ()
 
 let _ = 
   let () = do_init () in
