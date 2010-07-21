@@ -13,9 +13,6 @@ open Pos_cursor
 open Pos_piece
 
 let buf = ref (None : cell)
-
-let win = initscr ()
-
 let cur_pos = ref start_position
 
 let draw_position () =
@@ -99,7 +96,8 @@ let rec mainloop () =
     | Impossible _ -> let _ = flash () in mainloop ()
     | Quit _ -> ()
 
-let _ = 
+let _ =
+  let win = initscr () in
   let () = do_init win in
   let () = board_skeleton 0 0 in
   let () = update_cursor 0 0 in
