@@ -15,6 +15,17 @@ open Pos_piece
 let buf = ref (None : cell)
 let cur_pos = ref start_position
 
+let clear_status () =
+  let _ = move 19 0 in
+  let _ = deleteln () in
+  ()
+
+let set_status str =
+  let _ = clear_status () in
+  let () = normal () in
+  let _ = mvaddstr 19 0 str in
+  ()
+
 let draw_position () =
   let brd = !cur_pos.Types.board  in
   let _ = 
@@ -103,19 +114,21 @@ let drop_from_hand () =
     let shand = !cur_pos.sente_hand in
     let ghand = !cur_pos.gote_hand in
     let choose_side () =
+      let () = set_status "(s)ente or (g)ote" in
       match getch () with
 	| c when c = int_of_char 'g' -> Gote
 	| c when c = int_of_char 's' -> Sente 
-	| _ -> failwith "No (s)ente or (g)ote was chosen"
+	| _ -> failwith "No sente or gote was chosen"
     in
     let choose_piece lst =
+      let () = set_status "(p)awn, (s)ilver, (g)old, (b)ishop, or (r)ook" in
       let pc = match getch () with
 	| c when c = int_of_char 'p' -> Pawn
 	| c when c = int_of_char 's' -> Silver
 	| c when c = int_of_char 'g' -> Gold
 	| c when c = int_of_char 'b' -> Bishop
 	| c when c = int_of_char 'r' -> Rook
-	| _ -> failwith "No (p)awn, (s)ilver, (g)old, (b)ishop or (r)ook was chosen"
+	| _ -> failwith "No pawn, silver, gold, bishop or rook was chosen"
       in
       if List.mem pc lst
       then pc
@@ -178,9 +191,10 @@ let rec mainloop () =
 	| c when c = cmd.from_hand -> drop_from_hand ()
 	| _ -> failwith "Unknown command"
     in
+    let () = clear_status () in
     mainloop ()
   with
-    | Failure _ -> let _ = flash () in mainloop ()
+    | Failure reason -> let _ = flash () in let () = set_status reason in mainloop ()
     | Exit -> ()
 
 let _ =
