@@ -123,10 +123,31 @@ let draw_position () =
     done in
   ()
 
+type keybindings = {
+  quit : int ;
+  up : int ;
+  down : int ;
+  left : int ;
+  right : int 
+}
+
+let cmd = {
+  quit = int_of_char 'Q' ;
+  up = Key.up ;
+  down = Key.down ;
+  left = Key.left ;
+  right = Key.right
+}
+
+let rec mainloop () =
+  match getch () with
+    | c when c = cmd.quit -> ()
+    | _ -> mainloop ()
+
 let _ = 
   let () = do_init () in
   let () = board_skeleton 0 0 in
   let () = update_cursor 0 0 in
   let () = draw_position () in
-  let _ = getch() in
+  let _ = mainloop () in
   endwin ()
