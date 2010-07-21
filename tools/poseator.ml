@@ -133,16 +133,30 @@ type keybindings = {
 
 let cmd = {
   quit = int_of_char 'Q' ;
-  up = Key.up ;
-  down = Key.down ;
-  left = Key.left ;
-  right = Key.right
+  up = int_of_char 'k' ;
+  down = int_of_char 'j' ;
+  left = int_of_char 'h' ;
+  right = int_of_char 'l'
 }
 
+exception Quit
+
 let rec mainloop () =
-  match getch () with
-    | c when c = cmd.quit -> ()
-    | _ -> mainloop ()
+  try
+    let _ =
+      match getch () with
+	| c when c = cmd.quit -> raise Quit
+	| c when c = cmd.up ->
+	  update_cursor cursor.x ((cursor.y + 1) mod 5)
+	| c when c = cmd.down ->
+	  update_cursor cursor.x ((cursor.y + 4) mod 5)
+	| c when c = cmd.right ->
+	  update_cursor ((cursor.x + 1) mod 5) cursor.y
+	| c when c = cmd.left ->
+	  update_cursor ((cursor.x + 4) mod 5) cursor.y
+	| _ -> () in
+    mainloop()
+  with Quit _ -> ()
 
 let _ = 
   let () = do_init () in
