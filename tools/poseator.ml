@@ -28,14 +28,14 @@ let do_init () =
   let _ = init_pair 1 Color.red (-1)  in
   ()
 
-let normal_colors () = attrset (A.color_pair 0)
-let red_pieces () = attrset (A.color_pair 1 lor A.bold)
+let normal () = attrset (A.color_pair 0)
+let red () = attrset (A.color_pair 1 lor A.bold)
 let bold () = attrset (A.color_pair 0 lor A.bold)
 
 let cur_pos = ref start_position
 
 let board_skeleton y x =
-  let _ = normal_colors () in
+  let _ = normal () in
   let _ = mvaddch y x symbols.ulcorner in
   let _ = mvaddch y (x + 25) symbols.urcorner in
   let _ = mvaddch  (y + 10) x symbols.llcorner in
@@ -63,10 +63,11 @@ let board_skeleton y x =
 	done in
       ()
     done in
+  let _ = mvaddstr 11 11 " to move" in
   ()
 
 let empty_cell () =
-  let _ = normal_colors () in
+  let _ = normal () in
   let _ = hline symbols.bullet 2 in
   ()
 
@@ -80,8 +81,8 @@ let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
       let _ =
 	begin
 	  match s with
-	    | Sente -> red_pieces ()
-	    | Gote -> normal_colors ()
+	    | Sente -> red ()
+	    | Gote -> normal ()
 	end in
       let _ =
 	begin
@@ -122,6 +123,11 @@ let draw_position () =
 	draw_piece i j brd.(i).(j)
       done
     done in
+  let _ = move 11 6 in
+  let _ = match !cur_pos.to_move with
+    | Sente -> let _ = red () in addstr "Sente"
+    | Gote -> let _ = normal () in addstr " Gote"
+  in
   ()
 
 type keybindings = {
@@ -131,7 +137,8 @@ type keybindings = {
   left : int ;
   right : int ;
   switch_color : int ;
-  turnover : int
+  turnover : int ;
+  switch_move : int
 }
 
 let cmd = {
@@ -141,7 +148,8 @@ let cmd = {
   left = int_of_char 'h' ;
   right = int_of_char 'l' ;
   switch_color = int_of_char 'c' ;
-  turnover = int_of_char 't'
+  turnover = int_of_char 't' ;
+  switch_move = int_of_char 'm'
 }
 
 exception Quit
@@ -180,6 +188,9 @@ let rec mainloop () =
 		  draw_position ()
 		with Cannot _ -> let _ = flash () in ()
 	  end
+	| c when c = cmd.switch_move ->
+	  let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
+	  draw_position ()
 	| _ -> () in
     mainloop()
   with Quit _ -> ()
