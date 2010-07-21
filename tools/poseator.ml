@@ -5,6 +5,8 @@ open Curses
 open Acs
 open Position
 
+open Pos_keybindings
+
 type cursor_t = {
   mutable x : int ;
   mutable y : int
@@ -23,6 +25,7 @@ let less = int_of_char '<'
 let do_init () =
   let _ = noecho () in
   let _ = curs_set 0 in
+  let _ = keypad win true in
   let _ = start_color () in
   let _ = use_default_colors () in
   let _ = init_pair 0 0 (-1) in
@@ -143,30 +146,6 @@ let draw_position () =
   let _ = show_piece !buf in
   ()
 
-type keybindings = {
-  quit : int ;
-  up : int ;
-  down : int ;
-  left : int ;
-  right : int ;
-  switch_color : int ;
-  turnover : int ;
-  switch_move : int ;
-  take_or_place : int
-}
-
-let cmd = {
-  quit = int_of_char 'Q' ;
-  up = int_of_char 'k' ;
-  down = int_of_char 'j' ;
-  left = int_of_char 'h' ;
-  right = int_of_char 'l' ;
-  switch_color = int_of_char 'c' ;
-  turnover = int_of_char 't' ;
-  switch_move = int_of_char 'm' ;
-  take_or_place = int_of_char ' '
-}
-
 exception Quit
 
 let rec mainloop () =
@@ -226,7 +205,8 @@ let rec mainloop () =
 		draw_position ()
 	      | _, _ -> let _ = flash () in ()
 	  end
-	| _ -> () in
+	| _ -> let _ = flash () in ()
+    in
     mainloop()
   with Quit _ -> ()
 
