@@ -82,14 +82,12 @@ let sideways_attackers = _find_attackers (1, 0)
 let straight_sliders = _find_sliders (0, 1)
 let diag_sliders = _find_sliders (1, 1)
 
-exception Cannot
-
 let turnover piece =
   match piece with
-    | King -> raise Cannot
+    | King -> failwith "King cannot be promoted"
     | Pawn -> Tokin
     | Tokin -> Pawn
-    | Gold -> raise Cannot
+    | Gold -> failwith "Gold general cannot be promoted"
     | Silver -> GoldS
     | GoldS -> Silver
     | Bishop -> DragonHorse

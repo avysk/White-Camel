@@ -58,7 +58,7 @@ let curs_turnover () =
       try
 	let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
 	draw_position ()
-      with Cannot _ -> raise Impossible (* FIXME *)
+      with Failure _ -> raise Impossible (* FIXME *)
 
 let take_or_place () =
   match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
