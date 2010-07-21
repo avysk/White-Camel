@@ -11,6 +11,7 @@ type cursor_t = {
 }
 
 let cursor = { x = 0; y = 0 }
+let buf = ref (None : cell)
 
 let win = initscr ()
 let symbols = get_acs_codes ()
@@ -64,6 +65,14 @@ let board_skeleton y x =
       ()
     done in
   let _ = mvaddstr 11 11 " to move" in
+  let _ = mvaddch 15 0 symbols.ulcorner in
+  let _ = hline symbols.hline 2 in
+  let _ = mvaddch 15 3 symbols.urcorner in
+  let _ = mvaddch 16 0 symbols.vline in
+  let _ = mvaddch 16 3 symbols.vline in
+  let _ = mvaddch 17 0 symbols.llcorner in
+  let _ = hline symbols.hline 2 in
+  let _ = mvaddch 17 3 symbols.lrcorner in
   ()
 
 let empty_cell () =
@@ -71,10 +80,7 @@ let empty_cell () =
   let _ = hline symbols.bullet 2 in
   ()
 
-let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
-  let cursed_y = 9 - 2 * y in
-  let cursed_x = 2 + 5 * x in
-  let _ = move cursed_y cursed_x in
+let show_piece pc (* at the given point *) =
   match pc with
     | None -> empty_cell ()
     | Some (s, p) ->
@@ -99,6 +105,12 @@ let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
 	    | DragonKing -> addstr "DK"
 	end in
       ()
+
+let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
+  let cursed_y = 9 - 2 * y in
+  let cursed_x = 2 + 5 * x in
+  let _ = move cursed_y cursed_x in
+  show_piece pc
 
 let update_cursor x y =
   let x' = cursor.x in
@@ -126,8 +138,9 @@ let draw_position () =
   let _ = move 11 6 in
   let _ = match !cur_pos.to_move with
     | Sente -> let _ = red () in addstr "Sente"
-    | Gote -> let _ = normal () in addstr " Gote"
-  in
+    | Gote -> let _ = normal () in addstr " Gote" in
+  let _ = move 16 1 in
+  let _ = show_piece !buf in
   ()
 
 type keybindings = {
@@ -138,7 +151,8 @@ type keybindings = {
   right : int ;
   switch_color : int ;
   turnover : int ;
-  switch_move : int
+  switch_move : int ;
+  take_or_place : int
 }
 
 let cmd = {
@@ -149,7 +163,8 @@ let cmd = {
   right = int_of_char 'l' ;
   switch_color = int_of_char 'c' ;
   turnover = int_of_char 't' ;
-  switch_move = int_of_char 'm'
+  switch_move = int_of_char 'm' ;
+  take_or_place = int_of_char ' '
 }
 
 exception Quit
@@ -191,6 +206,26 @@ let rec mainloop () =
 	| c when c = cmd.switch_move ->
 	  let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
 	  draw_position ()
+	| c when c = cmd.take_or_place ->
+	  begin
+	    match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
+	      | None, None -> let _ = flash () in ()
+	      | None, p ->
+		let _ =
+		  begin
+		    buf := p ;
+		    !cur_pos.Types.board.(cursor.x).(cursor.y) <- None
+		  end in
+		draw_position ()
+	      | p, None ->
+		let _ =
+		  begin
+		    buf := None ;
+		    !cur_pos.Types.board.(cursor.x).(cursor.y) <- p
+		  end in
+		draw_position ()
+	      | _, _ -> let _ = flash () in ()
+	  end
 	| _ -> () in
     mainloop()
   with Quit _ -> ()
