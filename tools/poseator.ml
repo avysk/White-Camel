@@ -41,7 +41,6 @@ let draw_position () =
     !cur_pos.gote_hand in
   ()
 
-exception Quit
 exception Impossible
 
 let curs_switch_color () =
@@ -163,7 +162,7 @@ let rec mainloop () =
   try
     let _ =
       match getch () with
-	| c when c = cmd.quit -> raise Quit
+	| c when c = cmd.quit -> raise Exit
 	| c when c = cmd.up ->
 	  update_cursor cursor.x ((cursor.y + 1) mod 5)
 	| c when c = cmd.down ->
@@ -185,7 +184,7 @@ let rec mainloop () =
     mainloop ()
   with
     | Impossible _ -> let _ = flash () in mainloop ()
-    | Quit _ -> ()
+    | Exit -> ()
 
 let _ =
   let win = initscr () in
