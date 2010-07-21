@@ -75,7 +75,11 @@ let take_or_place () =
       let _ =
 	begin
 	  buf := None ;
-	  !cur_pos.Types.board.(cursor.x).(cursor.y) <- p
+	  !cur_pos.Types.board.(cursor.x).(cursor.y) <- p ;
+	  match p with
+	    | Some (Sente, King) -> cur_pos := {!cur_pos with sente_king = (cursor.x, cursor.y)}
+	    | Some (Gote, King) -> cur_pos := {!cur_pos with gote_king = (cursor.x, cursor.y)}
+	    | _ -> ()
 	end in
       draw_position ()
     | _, _ -> raise Impossible
@@ -95,6 +99,65 @@ let curs_to_hand () =
 	cur_pos := {!cur_pos with sente_hand = shand; gote_hand = ghand}
   in
   draw_position ()
+
+let drop_from_hand () =
+  if !cur_pos.Types.board.(cursor.x).(cursor.y) != None
+  (* Not possible to drop if there's a piece under cursor already *)
+  then raise Impossible
+  else
+    let shand = !cur_pos.sente_hand in
+    let ghand = !cur_pos.gote_hand in
+    let choose_side () =
+      match getch () with
+	| c when c = int_of_char 'g' -> Gote
+	| c when c = int_of_char 's' -> Sente 
+	| _ -> raise Impossible in
+    let choose_piece lst =
+      let pc = match getch () with
+	| c when c = int_of_char 'p' -> Pawn
+	| c when c = int_of_char 's' -> Silver
+	| c when c = int_of_char 'g' -> Gold
+	| c when c = int_of_char 'b' -> Bishop
+	| c when c = int_of_char 'r' -> Rook
+	| _ -> raise Impossible
+      in
+      if List.mem pc lst
+      then pc
+      else raise Impossible (* Cannot drop piece not in hand *)
+    in
+    let s, p = match (List.length shand), (List.length ghand) with
+      | 0, 0 -> raise Impossible (* both hands are empty, cannot drop *)
+      | 1, 0 -> Sente, List.hd shand (* only one piece in sente hand, gote hand is empty *)
+      | _, 0 -> Sente, choose_piece shand (* chooee sente piece, gote hand is empty *)
+      | 0, 1 -> Gote, List.hd ghand (* only one piece in gote hand, sente hand is empty *)
+      | 0, _ -> Gote, choose_piece ghand (* choose gote piece, sente hand is empty *)
+      | 1, 1 -> (* choose sente/gote, only one piece in both hands *)
+	let sd = choose_side () in
+	sd, List.hd (if sd = Sente then shand else ghand)
+      | 1, _ -> (* choose sente/gote; if gote choose the piece *)
+	let sd = choose_side () in
+	sd, if sd = Sente then List.hd shand else choose_piece ghand
+      | _, 1 -> (* choose sente/gote; if sente choose the piece *)
+	let sd = choose_side () in
+	sd, if sd = Sente then choose_piece shand else List.hd ghand
+      | _, _ -> (* choose sente/gote then choose piece *)
+	let sd = choose_side () in
+	sd, choose_piece (if sd = Sente then shand else ghand)
+    in
+    let _ = begin
+      !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
+      let filter_one_if_two elt lst =
+	(* if we remove two elts from lst, put one back *)
+	let tmp = List.filter ((!=) elt) lst in
+	if List.length lst - List.length tmp = 1
+	then tmp
+	else elt :: tmp
+      in
+      match s with
+	| Sente -> cur_pos := {!cur_pos with sente_hand = filter_one_if_two p shand}
+	| Gote -> cur_pos := {!cur_pos with gote_hand = filter_one_if_two p ghand}
+    end in
+    draw_position ()
 
 let rec mainloop () =
   try
@@ -116,6 +179,7 @@ let rec mainloop () =
 	  draw_position ()
 	| c when c = cmd.take_or_place -> take_or_place ()
 	| c when c = cmd.to_hand -> curs_to_hand ()
+	| c when c = cmd.from_hand -> drop_from_hand ()
 	| _ -> raise Impossible
     in
     mainloop ()

@@ -11,6 +11,7 @@ type keybindings = {
   switch_move : int ;
   take_or_place : int ;
   to_hand : int ;
+  from_hand : int
 }
 
 let cmd = {
@@ -24,4 +25,5 @@ let cmd = {
   switch_move = int_of_char 'm' ;
   take_or_place = int_of_char ' ' ;
   to_hand = int_of_char 'h' ;
+  from_hand = int_of_char 'd'
 }
