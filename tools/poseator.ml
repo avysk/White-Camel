@@ -6,6 +6,8 @@ open Acs
 open Position
 
 open Pos_keybindings
+open Pos_board_skeleton
+open Pos_curses_utils
 
 type cursor_t = {
   mutable x : int ;
@@ -22,64 +24,10 @@ let space = int_of_char ' '
 let more = int_of_char '>'
 let less = int_of_char '<'
 
-let do_init () =
-  let _ = noecho () in
-  let _ = curs_set 0 in
-  let _ = keypad win true in
-  let _ = start_color () in
-  let _ = use_default_colors () in
-  let _ = init_pair 0 0 (-1) in
-  let _ = init_pair 1 Color.red (-1)  in
-  ()
-
-let normal () = attrset (A.color_pair 0)
-let red () = attrset (A.color_pair 1 lor A.bold)
-let bold () = attrset (A.color_pair 0 lor A.bold)
-
 let cur_pos = ref start_position
 
-let board_skeleton y x =
-  let _ = normal () in
-  let _ = mvaddch y x symbols.ulcorner in
-  let _ = mvaddch y (x + 25) symbols.urcorner in
-  let _ = mvaddch  (y + 10) x symbols.llcorner in
-  let _ = mvaddch (y + 10) (x + 25) symbols.lrcorner in
-  let _ =
-    for i = 0 to 5 do
-      for j = 0 to 4 do
-	mvhline (y + 2 * i) (x + 5 * j + 1) symbols.hline 4 ;
-	let _ = mvaddch (y + 2 * j + 1) (x + 5 * i) symbols.vline in
-	()
-      done
-    done in
-  let _ =
-    for i = 1 to 4 do
-      let t = y + 2 * i in
-      let s = x + 5 * i in
-      let _ = mvaddch t x symbols.ltee in
-      let _ = mvaddch t (x + 25) symbols.rtee in
-      let _ = mvaddch y s symbols.ttee in
-      let _ = mvaddch (y + 10) s symbols.btee in
-      let _ =
-	for j = 1 to 4 do
-	  let _ = mvaddch t (5 * j + x) symbols.plus in
-	  ()
-	done in
-      ()
-    done in
-  let _ = mvaddstr 11 11 " to move" in
-  let _ = mvaddch 15 0 symbols.ulcorner in
-  let _ = hline symbols.hline 2 in
-  let _ = mvaddch 15 3 symbols.urcorner in
-  let _ = mvaddch 16 0 symbols.vline in
-  let _ = mvaddch 16 3 symbols.vline in
-  let _ = mvaddch 17 0 symbols.llcorner in
-  let _ = hline symbols.hline 2 in
-  let _ = mvaddch 17 3 symbols.lrcorner in
-  ()
-
 let empty_cell () =
-  let _ = normal () in
+  let () = normal () in
   let _ = hline symbols.bullet 2 in
   ()
 
@@ -87,7 +35,7 @@ let show_piece pc (* at the given point *) =
   match pc with
     | None -> empty_cell ()
     | Some (s, p) ->
-      let _ =
+      let () =
 	begin
 	  match s with
 	    | Sente -> red ()
@@ -123,7 +71,7 @@ let update_cursor x y =
   let cy n = 9 - 2 * n in
   let cx1 n = 5 * n + 1 in
   let cx2 n = 5 * n + 4 in
-  let _ = bold () in
+  let () = bold () in
   let _ = mvaddch (cy y') (cx1 x') space in
   let _ = mvaddch (cy y') (cx2 x') space in
   let _ = mvaddch (cy y) (cx1 x) more in
@@ -140,8 +88,8 @@ let draw_position () =
     done in
   let _ = move 11 6 in
   let _ = match !cur_pos.to_move with
-    | Sente -> let _ = red () in addstr "Sente"
-    | Gote -> let _ = normal () in addstr " Gote" in
+    | Sente -> let () = red () in addstr "Sente"
+    | Gote -> let () = normal () in addstr " Gote" in
   let _ = move 16 1 in
   let _ = show_piece !buf in
   ()
@@ -214,8 +162,8 @@ let rec mainloop () =
     | Quit _ -> ()
 
 let _ = 
-  let () = do_init () in
-  let () = board_skeleton 0 0 in
+  let () = do_init win in
+  let () = board_skeleton symbols 0 0 in
   let () = update_cursor 0 0 in
   let () = draw_position () in
   let _ = mainloop () in
