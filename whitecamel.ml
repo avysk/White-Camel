@@ -52,11 +52,9 @@ let print_position pos =
   end
 
 
-let under_check pos side = assert false
-
 let find_moves pos side = []
 
 let won_position pos side = (List.length $ find_moves pos $ other) side == 0
 
 ;;
-print_position start_position 
+(* print_position start_position *)
