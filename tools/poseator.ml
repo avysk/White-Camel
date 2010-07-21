@@ -8,21 +8,12 @@ open Position
 open Pos_keybindings
 open Pos_board_skeleton
 open Pos_curses_utils
+open Pos_cursor
 
-type cursor_t = {
-  mutable x : int ;
-  mutable y : int
-}
-
-let cursor = { x = 0; y = 0 }
 let buf = ref (None : cell)
 
 let win = initscr ()
 let symbols = get_acs_codes ()
-
-let space = int_of_char ' '
-let more = int_of_char '>'
-let less = int_of_char '<'
 
 let cur_pos = ref start_position
 
@@ -63,20 +54,6 @@ let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
   let _ = move cursed_y cursed_x in
   show_piece pc
 
-let update_cursor x y =
-  let x' = cursor.x in
-  let y' = cursor.y in
-  let _ = cursor.x <- x in
-  let _ = cursor.y <- y in
-  let cy n = 9 - 2 * n in
-  let cx1 n = 5 * n + 1 in
-  let cx2 n = 5 * n + 4 in
-  let () = bold () in
-  let _ = mvaddch (cy y') (cx1 x') space in
-  let _ = mvaddch (cy y') (cx2 x') space in
-  let _ = mvaddch (cy y) (cx1 x) more in
-  let _ = mvaddch (cy y) (cx2 x) less in
-  ()
 
 let draw_position () =
   let brd = !cur_pos.Types.board  in
