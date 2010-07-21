@@ -1,5 +1,6 @@
 open Utils
 open Types
+open Rules
 open Curses
 open Acs
 open Position
@@ -129,7 +130,8 @@ type keybindings = {
   down : int ;
   left : int ;
   right : int ;
-  switch_color : int
+  switch_color : int ;
+  turnover : int
 }
 
 let cmd = {
@@ -138,7 +140,8 @@ let cmd = {
   down = int_of_char 'j' ;
   left = int_of_char 'h' ;
   right = int_of_char 'l' ;
-  switch_color = int_of_char 'c'
+  switch_color = int_of_char 'c' ;
+  turnover = int_of_char 't'
 }
 
 exception Quit
@@ -164,6 +167,15 @@ let rec mainloop () =
 	      | Some (s, p) when p = King -> let _ = flash () in ()
 	      | Some (s, p) ->
 		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
+		draw_position ()
+	  end
+	| c when c = cmd.turnover ->
+	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
+	  begin
+	    match pc with
+	      | None -> let _ = flash () in ()
+	      | Some (s, p) ->
+		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
 		draw_position ()
 	  end
 	| _ -> () in
