@@ -175,8 +175,10 @@ let rec mainloop () =
 	    match pc with
 	      | None -> let _ = flash () in ()
 	      | Some (s, p) ->
-		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
-		draw_position ()
+		try
+		  let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
+		  draw_position ()
+		with Cannot _ -> let _ = flash () in ()
 	  end
 	| _ -> () in
     mainloop()

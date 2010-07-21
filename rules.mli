@@ -10,4 +10,5 @@ val sideways_attackers : piece_t list
 val straight_sliders : piece_t list
 val diag_sliders : piece_t list
 
+exception Cannot
 val turnover : piece_t -> piece_t
