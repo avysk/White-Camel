@@ -25,10 +25,10 @@ let check_step (brd, side, piece, point) delta =
 	if side = Sente && nj < 4 && j < 4 || side = Gote && nj > 0 && j > 0
 	then [] (* the move is not to or from promotion area *)
 	else match snd piece with (* promotion is possible *)
-          | Pawn -> [{what = (side, Tokin); start = st; finish = point'}]
-          | Silver -> [{what = (side, GoldS); start = st; finish = point'}]
-          | Bishop -> [{what = (side, DragonHorse); start = st; finish = point'}]
-          | Rook -> [{what = (side, DragonKing); start = st; finish = point'}]
+          | Pawn -> [{what = (side, turnover Pawn); start = st; finish = point'}]
+          | Silver -> [{what = (side, turnover Silver); start = st; finish = point'}]
+          | Bishop -> [{what = (side, turnover Bishop); start = st; finish = point'}]
+          | Rook -> [{what = (side, turnover Rook); start = st; finish = point'}]
           | _ -> [] (* nothing else can be promoted *)
             
 let rec check_slide_r acc (brd, side, piece, point) delta =

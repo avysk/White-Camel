@@ -81,3 +81,15 @@ let backward_diag_attackers = _find_attackers (-1, -1)
 let sideways_attackers = _find_attackers (1, 0)
 let straight_sliders = _find_sliders (0, 1)
 let diag_sliders = _find_sliders (1, 1)
+
+let turnover piece =
+  match piece with
+    | King -> King
+    | Pawn -> Tokin
+    | Gold -> Gold
+    | Silver -> GoldS
+    | GoldS -> Silver
+    | Bishop -> DragonHorse
+    | DragonHorse -> Bishop
+    | Rook -> DragonKing
+    | DragonKing -> Rook
