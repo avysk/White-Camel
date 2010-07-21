@@ -86,6 +86,7 @@ let turnover piece =
   match piece with
     | King -> King
     | Pawn -> Tokin
+    | Tokin -> Pawn
     | Gold -> Gold
     | Silver -> GoldS
     | GoldS -> Silver
