@@ -37,6 +37,42 @@ let draw_position () =
 exception Quit
 exception Impossible
 
+let curs_switch_color () =
+  match !cur_pos.Types.board.(cursor.x).(cursor.y) with
+    | None -> raise Impossible
+    | Some (s, p) when p = King -> raise Impossible
+    | Some (s, p) ->
+      let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
+      draw_position ()
+
+let curs_turnover () =
+  match !cur_pos.Types.board.(cursor.x).(cursor.y) with
+    | None -> raise Impossible
+    | Some (s, p) ->
+      try
+	let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
+	draw_position ()
+      with Cannot _ -> raise Impossible (* FIXME *)
+
+let take_or_place () =
+  match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
+    | None, None -> raise Impossible
+    | None, p ->
+      let _ =
+	begin
+	  buf := p ;
+	  !cur_pos.Types.board.(cursor.x).(cursor.y) <- None
+	end in
+      draw_position ()
+    | p, None ->
+      let _ =
+	begin
+	  buf := None ;
+	  !cur_pos.Types.board.(cursor.x).(cursor.y) <- p
+	end in
+      draw_position ()
+    | _, _ -> raise Impossible
+
 let rec mainloop () =
   try
     let _ =
@@ -50,50 +86,12 @@ let rec mainloop () =
 	  update_cursor ((cursor.x + 1) mod 5) cursor.y
 	| c when c = cmd.left ->
 	  update_cursor ((cursor.x + 4) mod 5) cursor.y
-	| c when c = cmd.switch_color ->
-	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
-	  begin
-	    match pc with
-	      | None -> raise Impossible
-	      | Some (s, p) when p = King -> raise Impossible
-	      | Some (s, p) ->
-		let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
-		draw_position ()
-	  end
-	| c when c = cmd.turnover ->
-	  let pc = !cur_pos.Types.board.(cursor.x).(cursor.y) in
-	  begin
-	    match pc with
-	      | None -> raise Impossible
-	      | Some (s, p) ->
-		try
-		  let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
-		  draw_position ()
-		with Cannot _ -> raise Impossible
-	  end
+	| c when c = cmd.switch_color -> curs_switch_color ()
+	| c when c = cmd.turnover -> curs_turnover ()
 	| c when c = cmd.switch_move ->
 	  let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
 	  draw_position ()
-	| c when c = cmd.take_or_place ->
-	  begin
-	    match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
-	      | None, None -> raise Impossible
-	      | None, p ->
-		let _ =
-		  begin
-		    buf := p ;
-		    !cur_pos.Types.board.(cursor.x).(cursor.y) <- None
-		  end in
-		draw_position ()
-	      | p, None ->
-		let _ =
-		  begin
-		    buf := None ;
-		    !cur_pos.Types.board.(cursor.x).(cursor.y) <- p
-		  end in
-		draw_position ()
-	      | _, _ -> raise Impossible
-	  end
+	| c when c = cmd.take_or_place -> take_or_place ()
 	| _ -> raise Impossible
     in
     mainloop ()
