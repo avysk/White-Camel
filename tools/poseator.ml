@@ -34,6 +34,7 @@ let bold () = attrset (A.color_pair 0 lor A.bold)
 let cur_pos = ref start_position
 
 let board_skeleton y x =
+  let _ = normal_colors () in
   let _ = mvaddch y x symbols.ulcorner in
   let _ = mvaddch y (x + 25) symbols.urcorner in
   let _ = mvaddch  (y + 10) x symbols.llcorner in
@@ -105,18 +106,14 @@ let update_cursor x y =
   let cy n = 9 - 2 * n in
   let cx1 n = 5 * n + 1 in
   let cx2 n = 5 * n + 4 in
+  let _ = bold () in
   let _ = mvaddch (cy y') (cx1 x') space in
   let _ = mvaddch (cy y') (cx2 x') space in
   let _ = mvaddch (cy y) (cx1 x) more in
   let _ = mvaddch (cy y) (cx2 x) less in
   ()
 
-let _ = 
-  let () = do_init () in
-  let _ = normal_colors () in
-  let () = board_skeleton 0 0 in
-  let _ = bold () in
-  let () = update_cursor 0 0 in
+let draw_position () =
   let brd = !cur_pos.Types.board  in
   let _ = 
     for i = 0 to 4 do
@@ -124,5 +121,12 @@ let _ =
 	draw_piece i j brd.(i).(j)
       done
     done in
+  ()
+
+let _ = 
+  let () = do_init () in
+  let () = board_skeleton 0 0 in
+  let () = update_cursor 0 0 in
+  let () = draw_position () in
   let _ = getch() in
   endwin ()
