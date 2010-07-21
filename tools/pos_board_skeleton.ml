@@ -3,7 +3,8 @@ open Acs
 
 open Pos_curses_utils
 
-let board_skeleton symbols y x =
+let board_skeleton y x =
+  let symbols = get_acs_codes () in
   let () = normal () in
   let _ = mvaddch y x symbols.ulcorner in
   let _ = mvaddch y (x + 25) symbols.urcorner in

@@ -1,59 +1,22 @@
+open Curses
+open Acs
+
 open Utils
 open Types
 open Rules
-open Curses
-open Acs
 open Position
 
 open Pos_keybindings
 open Pos_board_skeleton
 open Pos_curses_utils
 open Pos_cursor
+open Pos_piece
 
 let buf = ref (None : cell)
 
 let win = initscr ()
-let symbols = get_acs_codes ()
 
 let cur_pos = ref start_position
-
-let empty_cell () =
-  let () = normal () in
-  let _ = hline symbols.bullet 2 in
-  ()
-
-let show_piece pc (* at the given point *) =
-  match pc with
-    | None -> empty_cell ()
-    | Some (s, p) ->
-      let () =
-	begin
-	  match s with
-	    | Sente -> red ()
-	    | Gote -> normal ()
-	end in
-      let _ =
-	begin
-	  match p with
-	    | Pawn -> addstr "Pn"
-	    | King -> addstr "Kg"
-	    | Rook -> addstr "Rk"
-	    | Bishop -> addstr "Bp"
-	    | Gold -> addstr "Gd"
-	    | Silver -> addstr "Sr"
-	    | Tokin -> addstr "Tn"
-	    | GoldS -> addstr "Gs"
-	    | DragonHorse -> addstr "DH"
-	    | DragonKing -> addstr "DK"
-	end in
-      ()
-
-let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
-  let cursed_y = 9 - 2 * y in
-  let cursed_x = 2 + 5 * x in
-  let _ = move cursed_y cursed_x in
-  show_piece pc
-
 
 let draw_position () =
   let brd = !cur_pos.Types.board  in
@@ -140,7 +103,7 @@ let rec mainloop () =
 
 let _ = 
   let () = do_init win in
-  let () = board_skeleton symbols 0 0 in
+  let () = board_skeleton 0 0 in
   let () = update_cursor 0 0 in
   let () = draw_position () in
   let _ = mainloop () in

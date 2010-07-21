@@ -1,1 +1,1 @@
-val board_skeleton : Curses.Acs.acs -> int -> int -> unit
+val board_skeleton : int -> int -> unit
