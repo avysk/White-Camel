@@ -29,6 +29,16 @@ let draw_position () =
     | Gote -> let () = normal () in addstr " Gote" in
   let _ = move 16 1 in
   let _ = show_piece !buf in
+  let _ = mvaddstr 12 0 "                        " in (* 24 spaces *)
+  let _ = move 12 0 in
+  let _ = List.iter
+    (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
+    !cur_pos.sente_hand in
+  let _ = mvaddstr 13 0 "                        " in (* 24 spaces *)
+  let _ = move 13 0 in
+  let _ = List.iter
+    (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
+    !cur_pos.gote_hand in
   ()
 
 exception Quit
@@ -70,6 +80,22 @@ let take_or_place () =
       draw_position ()
     | _, _ -> raise Impossible
 
+let curs_to_hand () =
+  let _ =  match !cur_pos.Types.board.(cursor.x).(cursor.y) with
+    | None -> raise Impossible
+    | Some (_, King) -> raise Impossible
+    | Some (s, pc) ->
+	!cur_pos.Types.board.(cursor.x).(cursor.y) <- None ;
+	let shand, ghand =
+	  begin
+	    match s with
+	      | Sente -> !cur_pos.sente_hand, basic_state pc :: !cur_pos.gote_hand
+	      | Gote -> basic_state pc :: !cur_pos.sente_hand, !cur_pos.gote_hand
+	  end in
+	cur_pos := {!cur_pos with sente_hand = shand; gote_hand = ghand}
+  in
+  draw_position ()
+
 let rec mainloop () =
   try
     let _ =
@@ -89,6 +115,7 @@ let rec mainloop () =
 	  let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
 	  draw_position ()
 	| c when c = cmd.take_or_place -> take_or_place ()
+	| c when c = cmd.to_hand -> curs_to_hand ()
 	| _ -> raise Impossible
     in
     mainloop ()

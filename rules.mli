@@ -12,3 +12,4 @@ val diag_sliders : piece_t list
 
 exception Cannot
 val turnover : piece_t -> piece_t
+val basic_state : piece_t -> piece_t

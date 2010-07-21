@@ -9,7 +9,8 @@ type keybindings = {
   switch_color : int ;
   turnover : int ;
   switch_move : int ;
-  take_or_place : int
+  take_or_place : int ;
+  to_hand : int ;
 }
 
 let cmd = {
@@ -21,5 +22,6 @@ let cmd = {
   switch_color = int_of_char 'c' ;
   turnover = int_of_char 't' ;
   switch_move = int_of_char 'm' ;
-  take_or_place = int_of_char ' '
+  take_or_place = int_of_char ' ' ;
+  to_hand = int_of_char 'h' ;
 }

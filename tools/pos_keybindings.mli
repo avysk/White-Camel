@@ -7,7 +7,8 @@ type keybindings = {
   switch_color : int ;
   turnover : int ;
   switch_move : int ;
-  take_or_place : int
+  take_or_place : int ;
+  to_hand : int
 }
 
 val cmd : keybindings

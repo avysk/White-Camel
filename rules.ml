@@ -96,3 +96,16 @@ let turnover piece =
     | DragonHorse -> Bishop
     | Rook -> DragonKing
     | DragonKing -> Rook
+
+let basic_state piece =
+  match piece with
+    | King -> King
+    | Pawn -> Pawn
+    | Tokin -> Pawn
+    | Gold -> Gold
+    | Silver -> Silver
+    | GoldS -> Silver
+    | Bishop -> Bishop
+    | DragonHorse -> Bishop
+    | Rook -> Rook
+    | DragonKing -> Rook
