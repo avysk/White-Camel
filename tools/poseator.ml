@@ -41,28 +41,25 @@ let draw_position () =
     !cur_pos.gote_hand in
   ()
 
-exception Impossible
-
 let curs_switch_color () =
   match !cur_pos.Types.board.(cursor.x).(cursor.y) with
-    | None -> raise Impossible
-    | Some (s, p) when p = King -> raise Impossible
+    | None -> failwith "No piece to switch color"
+    | Some (s, p) when p = King -> failwith "Cannot change king's color"
     | Some (s, p) ->
       let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
       draw_position ()
 
 let curs_turnover () =
   match !cur_pos.Types.board.(cursor.x).(cursor.y) with
-    | None -> raise Impossible
+    | None -> failwith "No piece to turn over"
     | Some (s, p) ->
-      try
-	let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
-	draw_position ()
-      with Failure _ -> raise Impossible (* FIXME *)
+      (* NB: turnover p may raise Failure *)
+      let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
+      draw_position ()
 
 let take_or_place () =
   match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
-    | None, None -> raise Impossible
+    | None, None -> failwith "No piece on board and no piece in buffer"
     | None, p ->
       let _ =
 	begin
@@ -81,12 +78,12 @@ let take_or_place () =
 	    | _ -> ()
 	end in
       draw_position ()
-    | _, _ -> raise Impossible
+    | _, _ -> failwith "Buffer is not empty but there's already piece on board"
 
 let curs_to_hand () =
   let _ =  match !cur_pos.Types.board.(cursor.x).(cursor.y) with
-    | None -> raise Impossible
-    | Some (_, King) -> raise Impossible
+    | None -> failwith "No piece on board to put in hand"
+    | Some (_, King) -> failwith "Cannot put king in hand"
     | Some (s, pc) ->
 	!cur_pos.Types.board.(cursor.x).(cursor.y) <- None ;
 	let shand, ghand =
@@ -101,8 +98,7 @@ let curs_to_hand () =
 
 let drop_from_hand () =
   if !cur_pos.Types.board.(cursor.x).(cursor.y) != None
-  (* Not possible to drop if there's a piece under cursor already *)
-  then raise Impossible
+  then failwith "Cannot drop over another piece"
   else
     let shand = !cur_pos.sente_hand in
     let ghand = !cur_pos.gote_hand in
@@ -110,7 +106,8 @@ let drop_from_hand () =
       match getch () with
 	| c when c = int_of_char 'g' -> Gote
 	| c when c = int_of_char 's' -> Sente 
-	| _ -> raise Impossible in
+	| _ -> failwith "No (s)ente or (g)ote was chosen"
+    in
     let choose_piece lst =
       let pc = match getch () with
 	| c when c = int_of_char 'p' -> Pawn
@@ -118,14 +115,14 @@ let drop_from_hand () =
 	| c when c = int_of_char 'g' -> Gold
 	| c when c = int_of_char 'b' -> Bishop
 	| c when c = int_of_char 'r' -> Rook
-	| _ -> raise Impossible
+	| _ -> failwith "No (p)awn, (s)ilver, (g)old, (b)ishop or (r)ook was chosen"
       in
       if List.mem pc lst
       then pc
-      else raise Impossible (* Cannot drop piece not in hand *)
+      else failwith "Chosen piece is not in hand"
     in
     let s, p = match (List.length shand), (List.length ghand) with
-      | 0, 0 -> raise Impossible (* both hands are empty, cannot drop *)
+      | 0, 0 -> failwith "Both hands are empty, cannot drop."
       | 1, 0 -> Sente, List.hd shand (* only one piece in sente hand, gote hand is empty *)
       | _, 0 -> Sente, choose_piece shand (* chooee sente piece, gote hand is empty *)
       | 0, 1 -> Gote, List.hd ghand (* only one piece in gote hand, sente hand is empty *)
@@ -179,11 +176,11 @@ let rec mainloop () =
 	| c when c = cmd.take_or_place -> take_or_place ()
 	| c when c = cmd.to_hand -> curs_to_hand ()
 	| c when c = cmd.from_hand -> drop_from_hand ()
-	| _ -> raise Impossible
+	| _ -> failwith "Unknown command"
     in
     mainloop ()
   with
-    | Impossible _ -> let _ = flash () in mainloop ()
+    | Failure _ -> let _ = flash () in mainloop ()
     | Exit -> ()
 
 let _ =
