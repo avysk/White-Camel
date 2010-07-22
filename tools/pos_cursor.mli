@@ -6,3 +6,7 @@ type cursor_t = {
 val cursor : cursor_t
 
 val update_cursor : int -> int -> unit
+
+(*
+ vim:sw=2
+ *)
