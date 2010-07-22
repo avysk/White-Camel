@@ -43,13 +43,13 @@ let draw_position () =
   let _ = mvaddstr 12 0 "                        " in (* 24 spaces *)
   let _ = move 12 0 in
   let _ = List.iter
-    (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
-    !cur_pos.sente_hand in
+            (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
+            !cur_pos.sente_hand in
   let _ = mvaddstr 13 0 "                        " in (* 24 spaces *)
   let _ = move 13 0 in
   let _ = List.iter
-    (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
-    !cur_pos.gote_hand in
+            (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
+            !cur_pos.gote_hand in
   ()
 
 let curs_switch_color () =
@@ -57,38 +57,38 @@ let curs_switch_color () =
     | None -> failwith "No piece to switch color"
     | Some (s, p) when p = King -> failwith "Cannot change king's color"
     | Some (s, p) ->
-      let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
-      draw_position ()
+        let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (other s, p) in
+        draw_position ()
 
 let curs_turnover () =
   match !cur_pos.Types.board.(cursor.x).(cursor.y) with
     | None -> failwith "No piece to turn over"
     | Some (s, p) ->
-      (* NB: turnover p may raise Failure *)
-      let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
-      draw_position ()
+        (* NB: turnover p may raise Failure *)
+        let _ = !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, turnover p) in
+        draw_position ()
 
 let take_or_place () =
   match !buf, !cur_pos.Types.board.(cursor.x).(cursor.y) with
     | None, None -> failwith "No piece on board and no piece in buffer"
     | None, p ->
-      let _ =
-        begin
-          buf := p ;
-          !cur_pos.Types.board.(cursor.x).(cursor.y) <- None
-        end in
-      draw_position ()
+        let _ =
+          begin
+            buf := p ;
+            !cur_pos.Types.board.(cursor.x).(cursor.y) <- None
+          end in
+        draw_position ()
     | p, None ->
-      let _ =
-        begin
-          buf := None ;
-          !cur_pos.Types.board.(cursor.x).(cursor.y) <- p ;
-          match p with
-            | Some (Sente, King) -> cur_pos := {!cur_pos with sente_king = (cursor.x, cursor.y)}
-            | Some (Gote, King) -> cur_pos := {!cur_pos with gote_king = (cursor.x, cursor.y)}
-            | _ -> ()
-        end in
-      draw_position ()
+        let _ =
+          begin
+            buf := None ;
+            !cur_pos.Types.board.(cursor.x).(cursor.y) <- p ;
+            match p with
+              | Some (Sente, King) -> cur_pos := {!cur_pos with sente_king = (cursor.x, cursor.y)}
+              | Some (Gote, King) -> cur_pos := {!cur_pos with gote_king = (cursor.x, cursor.y)}
+              | _ -> ()
+          end in
+        draw_position ()
     | _, _ -> failwith "Buffer is not empty but there's already piece on board"
 
 let curs_to_hand () =
@@ -141,17 +141,17 @@ let drop_from_hand () =
       | 0, 1 -> Gote, List.hd ghand (* only one piece in gote hand, sente hand is empty *)
       | 0, _ -> Gote, choose_piece ghand (* choose gote piece, sente hand is empty *)
       | 1, 1 -> (* choose sente/gote, only one piece in both hands *)
-        let sd = choose_side () in
-        sd, List.hd (if sd = Sente then shand else ghand)
+          let sd = choose_side () in
+          sd, List.hd (if sd = Sente then shand else ghand)
       | 1, _ -> (* choose sente/gote; if gote choose the piece *)
-        let sd = choose_side () in
-        sd, if sd = Sente then List.hd shand else choose_piece ghand
+          let sd = choose_side () in
+          sd, if sd = Sente then List.hd shand else choose_piece ghand
       | _, 1 -> (* choose sente/gote; if sente choose the piece *)
-        let sd = choose_side () in
-        sd, if sd = Sente then choose_piece shand else List.hd ghand
+          let sd = choose_side () in
+          sd, if sd = Sente then choose_piece shand else List.hd ghand
       | _, _ -> (* choose sente/gote then choose piece *)
-        let sd = choose_side () in
-        sd, choose_piece (if sd = Sente then shand else ghand)
+          let sd = choose_side () in
+          sd, choose_piece (if sd = Sente then shand else ghand)
     in
     let _ = begin
       !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
@@ -174,18 +174,18 @@ let rec mainloop () =
       match getch () with
         | c when c = cmd.quit -> raise Exit
         | c when c = cmd.up ->
-          update_cursor cursor.x ((cursor.y + 1) mod 5)
+            update_cursor cursor.x ((cursor.y + 1) mod 5)
         | c when c = cmd.down ->
-          update_cursor cursor.x ((cursor.y + 4) mod 5)
+            update_cursor cursor.x ((cursor.y + 4) mod 5)
         | c when c = cmd.right ->
-          update_cursor ((cursor.x + 1) mod 5) cursor.y
+            update_cursor ((cursor.x + 1) mod 5) cursor.y
         | c when c = cmd.left ->
-          update_cursor ((cursor.x + 4) mod 5) cursor.y
+            update_cursor ((cursor.x + 4) mod 5) cursor.y
         | c when c = cmd.switch_color -> curs_switch_color ()
         | c when c = cmd.turnover -> curs_turnover ()
         | c when c = cmd.switch_move ->
-          let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
-          draw_position ()
+            let _ = cur_pos := {!cur_pos with to_move = other !cur_pos.to_move} in
+            draw_position ()
         | c when c = cmd.take_or_place -> take_or_place ()
         | c when c = cmd.to_hand -> curs_to_hand ()
         | c when c = cmd.from_hand -> drop_from_hand ()
@@ -193,9 +193,9 @@ let rec mainloop () =
     in
     let () = clear_status () in
     mainloop ()
-  with
-    | Failure reason -> let _ = flash () in let () = set_status reason in mainloop ()
-    | Exit -> ()
+      with
+        | Failure reason -> let _ = flash () in let () = set_status reason in mainloop ()
+        | Exit -> ()
 
 let _ =
   let win = initscr () in
