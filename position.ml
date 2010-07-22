@@ -11,9 +11,9 @@ let under_check_close brd side' king =
   let piece_at delta pcs =
     try
       begin
-	match brd @@ (king ++ delta) with
-	  | Some (s, p) when s = side' -> List.mem p pcs
-	  | _ -> false
+        match brd @@ (king ++ delta) with
+          | Some (s, p) when s = side' -> List.mem p pcs
+          | _ -> false
       end
     with Invalid_argument _ -> false in
   (* forward from king *)
@@ -34,14 +34,14 @@ let under_check_far brd side' king =
   let rec piece_along current delta pcs =
     try
       begin
-	let next = current ++ delta in
-	match brd @@ next with
-	  (* If cell is empty, continue search *)
-	  | None -> piece_along next delta pcs
-	  (* If there's a piece in a cell, check if is the one we're searching for *)
-	  | Some (s, p) when s = side' -> List.mem p pcs
-	  (* Piece belonging to the other side block checks *)
-	  | _ -> false
+        let next = current ++ delta in
+        match brd @@ next with
+          (* If cell is empty, continue search *)
+          | None -> piece_along next delta pcs
+          (* If there's a piece in a cell, check if is the one we're searching for *)
+          | Some (s, p) when s = side' -> List.mem p pcs
+          (* Piece belonging to the other side block checks *)
+          | _ -> false
       end
     (* If board is over, no attack from this line *)
     with Invalid_argument _ -> false in
@@ -89,11 +89,11 @@ let apply_move position move =
     (* normal move *)
     | _ ->
       begin
-	match pc with
-	  (* king's move *)
-	  | (side, King) -> assert false
-	  (* other move *)
-	  | _  -> assert false
+        match pc with
+          (* king's move *)
+          | (side, King) -> assert false
+          (* other move *)
+          | _  -> assert false
       end
 
 let start_position = init_position

@@ -30,11 +30,11 @@ let print_position pos =
     for row = 4 downto 0 do
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.printf "|%s|%s|%s|%s|%s|\n"
-	(pts brd.(0).(row))
-	(pts brd.(1).(row))
-	(pts brd.(2).(row))
-	(pts brd.(3).(row))
-	(pts brd.(4).(row)) ;
+        (pts brd.(0).(row))
+        (pts brd.(1).(row))
+        (pts brd.(2).(row))
+        (pts brd.(3).(row))
+        (pts brd.(4).(row)) ;
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.printf "+---+---+---+---+---+\n" ;
     done ;
@@ -47,8 +47,8 @@ let print_position pos =
     end ;
     Printf.printf "\n%s to move.\n" (
       match pos.to_move with
-	| Sente -> "Sente"
-	| Gote -> "Gote")
+        | Sente -> "Sente"
+        | Gote -> "Gote")
   end
 
 

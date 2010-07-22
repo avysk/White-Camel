@@ -19,12 +19,12 @@ let check_step (brd, side, piece, point) delta =
       let st = Some point in
       (* The move without promotion *)
       {what = piece; start = st; finish = point'} ::
-	(* Adding possible promotion move *)
+        (* Adding possible promotion move *)
         let j = snd point in 
-	let nj = snd point' in
-	if side = Sente && nj < 4 && j < 4 || side = Gote && nj > 0 && j > 0
-	then [] (* the move is not to or from promotion area *)
-	else match snd piece with (* promotion is possible *)
+        let nj = snd point' in
+        if side = Sente && nj < 4 && j < 4 || side = Gote && nj > 0 && j > 0
+        then [] (* the move is not to or from promotion area *)
+        else match snd piece with (* promotion is possible *)
           | Pawn -> [{what = (side, turnover Pawn); start = st; finish = point'}]
           | Silver -> [{what = (side, turnover Silver); start = st; finish = point'}]
           | Bishop -> [{what = (side, turnover Bishop); start = st; finish = point'}]
@@ -75,10 +75,10 @@ let check_one_rule situation mv =
       begin
         try check_step situation delta
         with
-	  | Invalid_argument _ ->
-	    [] (* the move is out of the board's borders *)
-	  | Not_found _ ->
-	    [] (* the move is blocked by own piece *)
+          | Invalid_argument _ ->
+            [] (* the move is out of the board's borders *)
+          | Not_found _ ->
+            [] (* the move is blocked by own piece *)
       end
     | (Slide, delta) -> check_slide situation delta
 
@@ -114,9 +114,9 @@ let rec find_all_moves_r acc brd point hand side =
         let drops = generate_drops hand side point in
         find_all_moves_r (drops @ acc) brd next hand side
       | Some ((s, p) as piece) when s = side ->
-	let mvs = moves_for_piece (brd, side, piece, point) in
-	find_all_moves_r (mvs @ acc) brd next hand side
-	(* we can move pieces only of own color *)
+        let mvs = moves_for_piece (brd, side, piece, point) in
+        find_all_moves_r (mvs @ acc) brd next hand side
+        (* we can move pieces only of own color *)
       | _ -> find_all_moves_r acc brd next hand side
   with Invalid_argument _ -> acc (* We came to the 6th row, so finished *)
 
@@ -130,4 +130,3 @@ let find_all_moves pos side =
   let hand = if side = Sente then pos.sente_hand else pos.gote_hand in
   find_all_moves_r [] pos.board (0, 0) hand side
 
-(* -*- mode: tuareg; indent-tabs-mode: nil -*- *)

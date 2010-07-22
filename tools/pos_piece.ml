@@ -14,25 +14,25 @@ let show_piece pc (* at the given point *) =
     | None -> empty_cell ()
     | Some (s, p) ->
       let () =
-	begin
-	  match s with
-	    | Sente -> red ()
-	    | Gote -> normal ()
-	end in
+        begin
+          match s with
+            | Sente -> red ()
+            | Gote -> normal ()
+        end in
       let _ =
-	begin
-	  match p with
-	    | Pawn -> addstr "Pn"
-	    | King -> addstr "Kg"
-	    | Rook -> addstr "Rk"
-	    | Bishop -> addstr "Bp"
-	    | Gold -> addstr "Gd"
-	    | Silver -> addstr "Sr"
-	    | Tokin -> addstr "Tn"
-	    | GoldS -> addstr "Gs"
-	    | DragonHorse -> addstr "DH"
-	    | DragonKing -> addstr "DK"
-	end in
+        begin
+          match p with
+            | Pawn -> addstr "Pn"
+            | King -> addstr "Kg"
+            | Rook -> addstr "Rk"
+            | Bishop -> addstr "Bp"
+            | Gold -> addstr "Gd"
+            | Silver -> addstr "Sr"
+            | Tokin -> addstr "Tn"
+            | GoldS -> addstr "Gs"
+            | DragonHorse -> addstr "DH"
+            | DragonKing -> addstr "DK"
+        end in
       ()
 
 let draw_piece x y pc (* board coordinates, not cursed coordinates *) =
