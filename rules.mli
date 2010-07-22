@@ -12,3 +12,7 @@ val diag_sliders : piece_t list
 
 val turnover : piece_t -> piece_t
 val basic_state : piece_t -> piece_t
+
+(*
+ vim:sw=2
+ *)
