@@ -17,7 +17,7 @@ let m_diag = m_sente_diag @ m_gote_diag
 let m_raw = m_sente @ m_gote @ m_sides
 
 (* '@*' operator constructs the list of tuples as direct product of
- the element and the list *)
+the element and the list, see utils.ml *)
 
 (* Pawn moves one step forward *)
 let mv_sente_pawn = Step @* m_sente
@@ -41,7 +41,7 @@ let mv_bishop = Slide @* m_diag
 let mv_rook = Slide @* m_raw
 
 (* Dragon horse (promoted bishop) moves like bishop or one step
- horizontally or vertically *)
+horizontally or vertically *)
 let mv_dragonhorse = mv_bishop @ (Step @* m_raw)
 
 (* Dragon king (promoted rook) moves like rook or one step diagonally *)
@@ -57,8 +57,8 @@ let possible_moves = function
   | _, Rook -> mv_rook
   | _, DragonHorse -> mv_dragonhorse
   | _, DragonKing -> mv_dragonking
-  (* what's left: gold generals, tokins and promoted silvers,
-   all of them move as gold generals *)
+  (* what's left: gold generals, tokins and promoted silvers; all of them move
+   * as gold generals *)
   | Sente, _ -> mv_sente_gold
   | Gote, _ -> mv_gote_gold
 
@@ -84,26 +84,30 @@ let diag_sliders = _find_sliders (1, 1)
 
 let turnover piece =
   match piece with
-    | King -> failwith "King cannot be promoted"
-    | Pawn -> Tokin
-    | Tokin -> Pawn
-    | Gold -> failwith "Gold general cannot be promoted"
-    | Silver -> GoldS
-    | GoldS -> Silver
-    | Bishop -> DragonHorse
-    | DragonHorse -> Bishop
-    | Rook -> DragonKing
-    | DragonKing -> Rook
+  | King -> failwith "King cannot be promoted"
+  | Pawn -> Tokin
+  | Tokin -> Pawn
+  | Gold -> failwith "Gold general cannot be promoted"
+  | Silver -> GoldS
+  | GoldS -> Silver
+  | Bishop -> DragonHorse
+  | DragonHorse -> Bishop
+  | Rook -> DragonKing
+  | DragonKing -> Rook
 
 let basic_state piece =
   match piece with
-    | King -> King
-    | Pawn -> Pawn
-    | Tokin -> Pawn
-    | Gold -> Gold
-    | Silver -> Silver
-    | GoldS -> Silver
-    | Bishop -> Bishop
-    | DragonHorse -> Bishop
-    | Rook -> Rook
-    | DragonKing -> Rook
+  | King -> King
+  | Pawn -> Pawn
+  | Tokin -> Pawn
+  | Gold -> Gold
+  | Silver -> Silver
+  | GoldS -> Silver
+  | Bishop -> Bishop
+  | DragonHorse -> Bishop
+  | Rook -> Rook
+  | DragonKing -> Rook
+
+(*
+ vim:sw=2
+ *)
