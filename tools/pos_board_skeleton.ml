@@ -3,6 +3,10 @@ open Acs
 
 open Pos_curses_utils
 
+(* coordinates for the piece in a buffer *)
+let buffer_x = 1
+let buffer_y = 16
+
 let board_skeleton y x =
   let symbols = get_acs_codes () in
   let () = normal () in
@@ -33,13 +37,17 @@ let board_skeleton y x =
         done in
       ()
     done in
-  let _ = mvaddstr 11 11 " to move" in
-  let _ = mvaddch 15 0 symbols.ulcorner in
+  let _ = mvaddstr to_move_y (to_move_x + 5) " to move" in (* 5 is "Sente" length *)
+  let buf_ul_y = buffer_y - 1 in
+  let buf_ul_x = buffer_x - 1 in
+  let buf_lr_y = buffer_y + 1 in
+  let buf_lr_x = buffer_x + 2 in
+  let _ = mvaddch buf_ul_y buf_ul_x symbols.ulcorner in
   let _ = hline symbols.hline 2 in
-  let _ = mvaddch 15 3 symbols.urcorner in
-  let _ = mvaddch 16 0 symbols.vline in
-  let _ = mvaddch 16 3 symbols.vline in
-  let _ = mvaddch 17 0 symbols.llcorner in
+  let _ = mvaddch buffer_ul_y buffer_lr_x symbols.urcorner in
+  let _ = mvaddch buffer_y buffer_ul_x symbols.vline in
+  let _ = mvaddch buffer_y buf_lr_x symbols.vline in
+  let _ = mvaddch buf_lr_y buffer_ul_x symbols.llcorner in
   let _ = hline symbols.hline 2 in
-  let _ = mvaddch 17 3 symbols.lrcorner in
+  let _ = mvaddch buf_lr_y buf_lr_x symbols.lrcorner in
   ()

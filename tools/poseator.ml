@@ -14,18 +14,40 @@ open Pos_piece
 
 let buf = ref (None : cell)
 let cur_pos = ref start_position
-let status_line = 19
 
-let clear_status () =
-  let _ = move status_line 0 in
+let status_line = 19
+let sente_hand_line = 12
+let gote_hand_line = 13
+let to_move_x = 6
+let to_move_y = 11
+
+let clear_line n =
+  let _ = move n 0 in
   let _ = deleteln () in
+  let _ = insertln () in
   ()
+
+let clear_status () = clear_line status_line
 
 let set_status str =
   let _ = clear_status () in
   let () = normal () in
   let _ = mvaddstr status_line 0 str in
   ()
+
+let draw_hand = function
+  | Sente ->
+      let () = clear_line sente_hand_line in
+      let _ = List.iter
+                (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
+                !cur_pos.sente_hand in
+      ()
+  | Gote ->
+      let () = clear_line gote_hand_line in
+      let _ = List.iter
+                (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
+                !cur_pos.gote_hand in
+      ()
 
 let draw_position () =
   let brd = !cur_pos.Types.board  in
@@ -34,22 +56,14 @@ let draw_position () =
       draw_piece i j brd.(i).(j)
     done
   done in
-  let _ = move 11 6 in
+  let _ = move to_move_y to_move_x in
   let _ = match !cur_pos.to_move with
     | Sente -> let () = red () in addstr "Sente"
     | Gote -> let () = normal () in addstr " Gote" in
-  let _ = move 16 1 in
+  let _ = move buffer_y buffer_x in
   let _ = show_piece !buf in
-  let _ = mvaddstr 12 0 "                        " in (* 24 spaces *)
-  let _ = move 12 0 in
-  let _ = List.iter
-            (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
-            !cur_pos.sente_hand in
-  let _ = mvaddstr 13 0 "                        " in (* 24 spaces *)
-  let _ = move 13 0 in
-  let _ = List.iter
-            (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
-            !cur_pos.gote_hand in
+  let () = draw_hand Sente in
+  let () = draw_hand Gote in
   ()
 
 let curs_switch_color () =
