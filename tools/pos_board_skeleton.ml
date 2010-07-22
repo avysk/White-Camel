@@ -53,3 +53,7 @@ let board_skeleton y x =
   let _ = hline symbols.hline 2 in
   let _ = mvaddch buf_lr_y buf_lr_x symbols.lrcorner in
   ()
+
+(*
+ vim:sw=2
+ *)
