@@ -1,11 +1,15 @@
-(* -------------------- Mini-shogi specific -------------------- *)
 type piece_t = Pawn | King | Gold | Silver | Bishop | Rook | Tokin | GoldS | DragonKing | DragonHorse
-let all_pieces = [Pawn; King; Gold; Silver; Bishop; Rook; Tokin; GoldS; DragonKing; DragonHorse]
+
+let all_pieces =
+  [Pawn; King; Gold; Silver; Bishop; Rook; Tokin; GoldS; DragonKing; DragonHorse]
+
 type side = Sente | Gote
-type sliding = Step | Slide
 let other = function
   | Sente -> Gote
   | Gote -> Sente
+
+type sliding = Step | Slide
+
 type piece = side * piece_t
 type cell = piece option
 type board_t = cell array array
@@ -27,3 +31,7 @@ type position = {
   sente_king : int * int ;
   gote_king : int * int ;
 }
+
+(*
+vim:sw=2
+*)
