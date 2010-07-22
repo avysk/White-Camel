@@ -26,3 +26,7 @@ let update_cursor x y =
   let _ = mvaddch (cy y) (cx1 x) more in
   let _ = mvaddch (cy y) (cx2 x) less in
   ()
+
+(*
+ vim:sw=2
+ *)
