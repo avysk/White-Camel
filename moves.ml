@@ -16,9 +16,9 @@ let check_step (brd, side, piece, point) delta =
   match t with
     | Some (x, _) when x = side -> raise Not_found (* cannot eat own piece *)
     | _ ->
-      let st = Some point in
-      (* The move without promotion *)
-      {what = piece; start = st; finish = point'} ::
+        let st = Some point in
+        (* The move without promotion *)
+        {what = piece; start = st; finish = point'} ::
         (* Adding possible promotion move *)
         let j = snd point in 
         let nj = snd point' in
@@ -30,7 +30,7 @@ let check_step (brd, side, piece, point) delta =
           | Bishop -> [{what = (side, turnover Bishop); start = st; finish = point'}]
           | Rook -> [{what = (side, turnover Rook); start = st; finish = point'}]
           | _ -> [] (* nothing else can be promoted *)
-            
+
 let rec check_slide_r acc (brd, side, piece, point) delta =
 
   (* Construct the list of all sliding moves of the given piece from 'point'
@@ -39,11 +39,11 @@ let rec check_slide_r acc (brd, side, piece, point) delta =
    * So the 'start' value should be fixed by calling function. *)
 
   try let one = check_step (brd, side, piece, point) delta in
-      let acc' = one :: acc in
-      let point' = point ++ delta in
-      if brd @@ point' = None
-      then check_slide_r acc' (brd, side, piece, point') delta
-      else acc'
+  let acc' = one :: acc in
+  let point' = point ++ delta in
+  if brd @@ point' = None
+  then check_slide_r acc' (brd, side, piece, point') delta
+  else acc'
   with
     (* If we moved past the border of the board , stop searching. *)
     | Invalid_argument _ -> acc
@@ -72,14 +72,14 @@ let check_one_rule situation mv =
 
   match mv with
     | (Step, delta) ->
-      begin
-        try check_step situation delta
-        with
-          | Invalid_argument _ ->
-            [] (* the move is out of the board's borders *)
-          | Not_found _ ->
-            [] (* the move is blocked by own piece *)
-      end
+        begin
+          try check_step situation delta
+          with
+            | Invalid_argument _ ->
+                [] (* the move is out of the board's borders *)
+            | Not_found _ ->
+                [] (* the move is blocked by own piece *)
+        end
     | (Slide, delta) -> check_slide situation delta
 
 let moves_for_piece situation =
@@ -111,12 +111,12 @@ let rec find_all_moves_r acc brd point hand side =
     let next = incr point in
     match brd @@ point with (* may raise Invalid_argument *)
       | None ->
-        let drops = generate_drops hand side point in
-        find_all_moves_r (drops @ acc) brd next hand side
+          let drops = generate_drops hand side point in
+          find_all_moves_r (drops @ acc) brd next hand side
       | Some ((s, p) as piece) when s = side ->
-        let mvs = moves_for_piece (brd, side, piece, point) in
-        find_all_moves_r (mvs @ acc) brd next hand side
-        (* we can move pieces only of own color *)
+          let mvs = moves_for_piece (brd, side, piece, point) in
+          find_all_moves_r (mvs @ acc) brd next hand side
+      (* we can move pieces only of own color *)
       | _ -> find_all_moves_r acc brd next hand side
   with Invalid_argument _ -> acc (* We came to the 6th row, so finished *)
 

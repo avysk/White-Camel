@@ -4,7 +4,7 @@
 let ($) f g x = f (g x)
 
 (* constructing tuples of list *)
-let (@*) elt lst = List.map (fun t -> (elt, t)) lst
+let ( @* ) elt lst = List.map (fun t -> (elt, t)) lst
 
 (* iterating over the board *)
 let incr = function

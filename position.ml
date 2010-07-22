@@ -18,17 +18,17 @@ let under_check_close brd side' king =
     with Invalid_argument _ -> false in
   (* forward from king *)
   piece_at (0, fw) forward_attackers ||
-    (* forward diagonals from king *)
-    piece_at (-1, fw) forward_diag_attackers ||
-    piece_at (1, fw) forward_diag_attackers ||
-    (* sideways from king *)
-    piece_at (-1, 0) sideways_attackers ||
-    piece_at (1, 0) sideways_attackers ||
-    (* backward from king *)
-    piece_at (0, -fw) backward_attackers ||
-    (* backward diagonals from king *)
-    piece_at (-1, -fw) backward_diag_attackers ||
-    piece_at (1, -fw) backward_diag_attackers
+  (* forward diagonals from king *)
+  piece_at (-1, fw) forward_diag_attackers ||
+  piece_at (1, fw) forward_diag_attackers ||
+  (* sideways from king *)
+  piece_at (-1, 0) sideways_attackers ||
+  piece_at (1, 0) sideways_attackers ||
+  (* backward from king *)
+  piece_at (0, -fw) backward_attackers ||
+  (* backward diagonals from king *)
+  piece_at (-1, -fw) backward_diag_attackers ||
+  piece_at (1, -fw) backward_diag_attackers
 
 let under_check_far brd side' king =
   let rec piece_along current delta pcs =
@@ -46,13 +46,13 @@ let under_check_far brd side' king =
     (* If board is over, no attack from this line *)
     with Invalid_argument _ -> false in
   piece_along king (0, 1) straight_sliders ||
-    piece_along king (0, -1) straight_sliders ||
-    piece_along king (1, 0) straight_sliders ||
-    piece_along king (-1, 0) straight_sliders ||
-    piece_along king (1, 1) diag_sliders ||
-    piece_along king (-1, 1) diag_sliders ||
-    piece_along king (1, -1) diag_sliders ||
-    piece_along king (-1, -1) diag_sliders
+  piece_along king (0, -1) straight_sliders ||
+  piece_along king (1, 0) straight_sliders ||
+  piece_along king (-1, 0) straight_sliders ||
+  piece_along king (1, 1) diag_sliders ||
+  piece_along king (-1, 1) diag_sliders ||
+  piece_along king (1, -1) diag_sliders ||
+  piece_along king (-1, -1) diag_sliders
 
 let under_check position side =
   let king = match side with
@@ -88,25 +88,25 @@ let apply_move position move =
     | None -> assert false
     (* normal move *)
     | _ ->
-      begin
-        match pc with
-          (* king's move *)
-          | (side, King) -> assert false
-          (* other move *)
-          | _  -> assert false
-      end
+        begin
+          match pc with
+            (* king's move *)
+            | (side, King) -> assert false
+            (* other move *)
+            | _  -> assert false
+        end
 
 let start_position = init_position
-  [(0, 0, (Sente, King));
-   (1, 0, (Sente, Gold));
-   (2, 0, (Sente, Silver));
-   (3, 0, (Sente, Bishop));
-   (4, 0, (Sente, Rook));
-   (0, 1, (Sente, Pawn));
-   (4, 3, (Gote, Pawn));
-   (0, 4, (Gote, Rook));
-   (1, 4, (Gote, Bishop));
-   (2, 4, (Gote, Silver));
-   (3, 4, (Gote, Gold));
-   (4, 4, (Gote, King))]
-  Sente [] []
+                       [(0, 0, (Sente, King));
+                        (1, 0, (Sente, Gold));
+                        (2, 0, (Sente, Silver));
+                        (3, 0, (Sente, Bishop));
+                        (4, 0, (Sente, Rook));
+                        (0, 1, (Sente, Pawn));
+                        (4, 3, (Gote, Pawn));
+                        (0, 4, (Gote, Rook));
+                        (1, 4, (Gote, Bishop));
+                        (2, 4, (Gote, Silver));
+                        (3, 4, (Gote, Gold));
+                        (4, 4, (Gote, King))]
+                       Sente [] []
