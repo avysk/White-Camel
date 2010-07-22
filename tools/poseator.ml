@@ -36,23 +36,24 @@ let set_status str =
 let draw_hand = function
   | Sente ->
       let () = clear_line sente_hand_line in
-      let _ = List.iter
-      (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
-      !cur_pos.sente_hand in
+      let _ =
+        List.iter (fun p -> let _ = addstr " " in show_piece (Some (Sente, p)))
+                  !cur_pos.sente_hand in
       ()
   | Gote ->
       let () = clear_line gote_hand_line in
-      let _ = List.iter
-      (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
-      !cur_pos.gote_hand in
+      let _ =
+        List.iter (fun p -> let _ = addstr " " in show_piece (Some (Gote, p)))
+                  !cur_pos.gote_hand in
       ()
 
 let draw_position () =
   let brd = !cur_pos.Types.board  in
-  let _ = for i = 0 to 4 do
-    for j = 0 to 4 do
-      draw_piece i j brd.(i).(j)
-    done
+  let _ =
+    for i = 0 to 4 do
+      for j = 0 to 4 do
+        draw_piece i j brd.(i).(j)
+      done
     done in
   let _ = move to_move_y to_move_x in
   let _ =
@@ -113,14 +114,14 @@ let curs_to_hand () =
     | Some (_, King) -> failwith "Cannot put king in hand"
     | Some (s, pc) ->
         !cur_pos.Types.board.(cursor.x).(cursor.y) <- None ;
-        let shand, ghand = begin
-          match s with
-          | Sente -> !cur_pos.sente_hand, basic_state pc :: !cur_pos.gote_hand
-          | Gote -> basic_state pc :: !cur_pos.sente_hand, !cur_pos.gote_hand
-        end in
-        cur_pos := {!cur_pos with sente_hand = shand; gote_hand = ghand}
-        in
-        draw_position ()
+        let shand, ghand =
+          begin
+            match s with
+            | Sente -> !cur_pos.sente_hand, basic_state pc :: !cur_pos.gote_hand
+            | Gote -> basic_state pc :: !cur_pos.sente_hand, !cur_pos.gote_hand
+          end in
+        cur_pos := {!cur_pos with sente_hand = shand; gote_hand = ghand} in
+  draw_position ()
 
 let drop_from_hand () =
   if !cur_pos.Types.board.(cursor.x).(cursor.y) != None
@@ -133,57 +134,52 @@ let drop_from_hand () =
       match getch () with
       | c when c = int_of_char 'g' -> Gote
       | c when c = int_of_char 's' -> Sente 
-      | _ -> failwith "No sente or gote was chosen"
+      | _ -> failwith "No sente or gote was chosen" in
+    let choose_piece lst =
+      let () = set_status "(p)awn, (s)ilver, (g)old, (b)ishop, or (r)ook" in
+      let pc =
+        match getch () with
+        | c when c = int_of_char 'p' -> Pawn
+        | c when c = int_of_char 's' -> Silver
+        | c when c = int_of_char 'g' -> Gold
+        | c when c = int_of_char 'b' -> Bishop
+        | c when c = int_of_char 'r' -> Rook
+        | _ -> failwith "No pawn, silver, gold, bishop or rook was chosen" in
+      if List.mem pc lst then pc else failwith "Chosen piece is not in hand" in
+    let s, p =
+      match (List.length shand), (List.length ghand) with
+      | 0, 0 -> failwith "Both hands are empty, cannot drop."
+      | 1, 0 -> Sente, List.hd shand
+      | _, 0 -> Sente, choose_piece shand
+      | 0, 1 -> Gote, List.hd ghand
+      | 0, _ -> Gote, choose_piece ghand
+      | 1, 1 ->
+          let sd = choose_side () in
+          sd, List.hd (if sd = Sente then shand else ghand)
+      | 1, _ ->
+          let sd = choose_side () in
+          sd, if sd = Sente then List.hd shand else choose_piece ghand
+      | _, 1 ->
+          let sd = choose_side () in
+          sd, if sd = Sente then choose_piece shand else List.hd ghand
+      | _, _ ->
+          let sd = choose_side () in
+          sd, choose_piece (if sd = Sente then shand else ghand)
       in
-      let choose_piece lst =
-        let () = set_status "(p)awn, (s)ilver, (g)old, (b)ishop, or (r)ook" in
-        let pc =
-          match getch () with
-          | c when c = int_of_char 'p' -> Pawn
-          | c when c = int_of_char 's' -> Silver
-          | c when c = int_of_char 'g' -> Gold
-          | c when c = int_of_char 'b' -> Bishop
-          | c when c = int_of_char 'r' -> Rook
-          | _ -> failwith "No pawn, silver, gold, bishop or rook was chosen"
-        in
-        if List.mem pc lst
-        then pc
-        else failwith "Chosen piece is not in hand"
-      in
-      let s, p =
-        match (List.length shand), (List.length ghand) with
-        | 0, 0 -> failwith "Both hands are empty, cannot drop."
-        | 1, 0 -> Sente, List.hd shand (* only one piece in sente hand, gote hand is empty *)
-        | _, 0 -> Sente, choose_piece shand (* chooee sente piece, gote hand is empty *)
-        | 0, 1 -> Gote, List.hd ghand (* only one piece in gote hand, sente hand is empty *)
-        | 0, _ -> Gote, choose_piece ghand (* choose gote piece, sente hand is empty *)
-        | 1, 1 -> (* choose sente/gote, only one piece in both hands *)
-            let sd = choose_side () in
-            sd, List.hd (if sd = Sente then shand else ghand)
-        | 1, _ -> (* choose sente/gote; if gote choose the piece *)
-            let sd = choose_side () in
-            sd, if sd = Sente then List.hd shand else choose_piece ghand
-        | _, 1 -> (* choose sente/gote; if sente choose the piece *)
-            let sd = choose_side () in
-            sd, if sd = Sente then choose_piece shand else List.hd ghand
-        | _, _ -> (* choose sente/gote then choose piece *)
-            let sd = choose_side () in
-            sd, choose_piece (if sd = Sente then shand else ghand)
-            in
-            let _ = begin
-              !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
-              let filter_one_if_two elt lst = begin
-                (* if we remove two elts from lst, put one back *)
-                let tmp = List.filter ((!=) elt) lst in
-                if List.length lst - List.length tmp = 1
-                then tmp
-                else elt :: tmp
-              end in
-              match s with
-              | Sente -> cur_pos := {!cur_pos with sente_hand = filter_one_if_two p shand}
-              | Gote -> cur_pos := {!cur_pos with gote_hand = filter_one_if_two p ghand}
-            end in
-            draw_position ()
+    let _ =
+      begin
+        !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
+        let filter_one_if_two elt lst =
+          begin
+            (* if we remove two elts from lst, put one back *)
+            let tmp = List.filter ((!=) elt) lst in
+            if List.length lst - List.length tmp = 1 then tmp else elt :: tmp
+          end in
+        match s with
+        | Sente -> cur_pos := {!cur_pos with sente_hand = filter_one_if_two p shand}
+        | Gote -> cur_pos := {!cur_pos with gote_hand = filter_one_if_two p ghand}
+      end in
+    draw_position ()
 
 let verify () =
   if !buf != None
@@ -218,9 +214,9 @@ let rec mainloop () =
       | c when c = cmd.from_hand -> drop_from_hand ()
       | c when c = cmd.verify -> verify ()
       | _ -> failwith "Unknown command"
-          in
-          let () = clear_status () in
-          mainloop ()
+    in
+    let () = clear_status () in
+    mainloop ()
   with
   | Failure reason ->
       let _ = flash () in
@@ -236,3 +232,7 @@ let _ =
   let () = draw_position () in
   let _ = mainloop () in
   endwin ()
+
+(*
+vim:sw=2
+*)
