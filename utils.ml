@@ -1,5 +1,3 @@
-(* -------------------- Utilities -------------------- *)
-
 (* function composition *)
 let ($) f g x = f (g x)
 
@@ -19,3 +17,7 @@ let (@@) m (x, y) = m.(x).(y)
 
 let copy_board brd =
   Array.init 5 (fun i -> Array.copy brd.(i))
+
+(*
+vim:sw=2
+*)
