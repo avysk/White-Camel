@@ -14,3 +14,7 @@ type keybindings = {
 }
 
 val cmd : keybindings
+
+(*
+ vim:sw=2
+ *)
