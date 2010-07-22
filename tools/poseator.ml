@@ -18,9 +18,6 @@ let cur_pos = ref start_position
 let status_line = 19
 let sente_hand_line = 12
 let gote_hand_line = 13
-let to_move_x = 6
-let to_move_y = 11
-
 let clear_line n =
   let _ = move n 0 in
   let _ = deleteln () in

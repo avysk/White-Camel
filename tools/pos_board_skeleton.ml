@@ -6,6 +6,8 @@ open Pos_curses_utils
 (* coordinates for the piece in a buffer *)
 let buffer_x = 1
 let buffer_y = 16
+let to_move_x = 6
+let to_move_y = 11
 
 let board_skeleton y x =
   let symbols = get_acs_codes () in
@@ -44,10 +46,10 @@ let board_skeleton y x =
   let buf_lr_x = buffer_x + 2 in
   let _ = mvaddch buf_ul_y buf_ul_x symbols.ulcorner in
   let _ = hline symbols.hline 2 in
-  let _ = mvaddch buffer_ul_y buffer_lr_x symbols.urcorner in
-  let _ = mvaddch buffer_y buffer_ul_x symbols.vline in
+  let _ = mvaddch buf_ul_y buf_lr_x symbols.urcorner in
+  let _ = mvaddch buffer_y buf_ul_x symbols.vline in
   let _ = mvaddch buffer_y buf_lr_x symbols.vline in
-  let _ = mvaddch buf_lr_y buffer_ul_x symbols.llcorner in
+  let _ = mvaddch buf_lr_y buf_ul_x symbols.llcorner in
   let _ = hline symbols.hline 2 in
   let _ = mvaddch buf_lr_y buf_lr_x symbols.lrcorner in
   ()
