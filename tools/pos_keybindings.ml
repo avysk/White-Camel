@@ -29,3 +29,7 @@ let cmd = {
   from_hand = int_of_char 'd' ;
   verify = int_of_char 'v'
 }
+
+(*
+vim:sw=2
+*)
