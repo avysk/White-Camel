@@ -13,3 +13,7 @@ let do_init win =
 let normal () = attrset (A.color_pair 0)
 let red () = attrset (A.color_pair 1 lor A.bold)
 let bold () = attrset (A.color_pair 0 lor A.bold)
+
+(*
+vim:sw=2
+*)
