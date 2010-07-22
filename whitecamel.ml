@@ -3,9 +3,6 @@ open Types
 open Position
 open Moves
 
-
-;; (* ---------------------------------------- *)
-
 let print_position pos =
   let piece_t_to_string = function
     | Pawn -> "Pn"
@@ -17,24 +14,27 @@ let print_position pos =
     | Tokin -> "Tn"
     | GoldS -> "Gs"
     | DragonKing -> "DK"
-    | DragonHorse -> "DH" in
+    | DragonHorse -> "DH"
+  in
   let color_to_string = function
     | Sente -> "_"
-    | Gote -> "*" in
+    | Gote -> "*"
+  in
   let pts = function
     | None -> "   "
-    | Some (sd, pct) -> color_to_string sd ^ (piece_t_to_string pct) in
+    | Some (sd, pct) -> color_to_string sd ^ (piece_t_to_string pct)
+  in
   let brd = pos.board in
   begin
     Printf.printf "+---+---+---+---+---+\n" ;
     for row = 4 downto 0 do
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.printf "|%s|%s|%s|%s|%s|\n"
-        (pts brd.(0).(row))
-        (pts brd.(1).(row))
-        (pts brd.(2).(row))
-        (pts brd.(3).(row))
-        (pts brd.(4).(row)) ;
+      (pts brd.(0).(row))
+      (pts brd.(1).(row))
+      (pts brd.(2).(row))
+      (pts brd.(3).(row))
+      (pts brd.(4).(row)) ;
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.printf "+---+---+---+---+---+\n" ;
     done ;
@@ -47,14 +47,17 @@ let print_position pos =
     end ;
     Printf.printf "\n%s to move.\n" (
       match pos.to_move with
-        | Sente -> "Sente"
-        | Gote -> "Gote")
-  end
+      | Sente -> "Sente"
+      | Gote -> "Gote")
+    end
 
-
+(* FIXME *)
 let find_moves pos side = []
 
 let won_position pos side = (List.length $ find_moves pos $ other) side == 0
 
-;;
 (* print_position start_position *)
+
+(*
+vim:sw=2
+*)
