@@ -29,12 +29,11 @@ let set_status str =
 
 let draw_position () =
   let brd = !cur_pos.Types.board  in
-  let _ = 
-    for i = 0 to 4 do
-      for j = 0 to 4 do
-        draw_piece i j brd.(i).(j)
-      done
-    done in
+  let _ = for i = 0 to 4 do
+    for j = 0 to 4 do
+      draw_piece i j brd.(i).(j)
+    done
+  done in
   let _ = move 11 6 in
   let _ = match !cur_pos.to_move with
     | Sente -> let () = red () in addstr "Sente"
