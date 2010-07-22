@@ -14,16 +14,17 @@ open Pos_piece
 
 let buf = ref (None : cell)
 let cur_pos = ref start_position
+let status_line = 19
 
 let clear_status () =
-  let _ = move 19 0 in
+  let _ = move status_line 0 in
   let _ = deleteln () in
   ()
 
 let set_status str =
   let _ = clear_status () in
   let () = normal () in
-  let _ = mvaddstr 19 0 str in
+  let _ = mvaddstr status_line 0 str in
   ()
 
 let draw_position () =
