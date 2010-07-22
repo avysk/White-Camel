@@ -81,6 +81,7 @@ let init_position plist stm shd ghd =
     gote_king = (4, 4) ;
   }
 
+(*
 let apply_move position move =
   let (pc, st, fn) = move in
   let brd = position.board in
@@ -101,6 +102,7 @@ let apply_move position move =
         (* other move *)
         | _  -> assert false
       end
+*)
 
 let start_position =
   init_position [(0, 0, (Sente, King));
