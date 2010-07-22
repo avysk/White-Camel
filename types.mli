@@ -1,8 +1,14 @@
 type piece_t =
-    Pawn | King | Gold | Silver | Bishop | Rook | Tokin | GoldS | DragonKing | DragonHorse
+  Pawn | King | Gold | Silver | Bishop | Rook | Tokin | GoldS | DragonKing | DragonHorse
+
 val all_pieces : piece_t list
+
 type side = Sente | Gote
 val other : side -> side
+
+(* used to separate one-step moves from sliding moves *)
+type sliding = Step | Slide
+
 type piece = side * piece_t
 type cell = piece option
 type board_t = cell array array
@@ -16,10 +22,8 @@ type move = {
   finish : int * int ;
 }
 
-(* used to separate one-step moves from sliding moves *)
-type sliding = Step | Slide
-
 type hand = piece_t list
+
 type position = {
   board : board_t ;
   to_move : side ;
@@ -29,3 +33,7 @@ type position = {
   sente_king : int * int ;
   gote_king : int * int ;
 }
+
+(*
+vim:sw=2
+*)
