@@ -9,7 +9,8 @@ type keybindings = {
   switch_move : int ;
   take_or_place : int ;
   to_hand : int ;
-  from_hand : int
+  from_hand : int ;
+  verify : int
 }
 
 val cmd : keybindings
