@@ -5,6 +5,7 @@ open Utils
 open Types
 open Rules
 open Position
+open Check
 
 open Pos_keybindings
 open Pos_board_skeleton
