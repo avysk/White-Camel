@@ -1,0 +1,7 @@
+Bright ideas for the future:
+
+Checking for check based on the previous move.
+	(Probably move contains the check situation.)
+Move finding based on check situation.
+Position caching.
+Forcing (check, taking, maybe attack on rook/bishop) and non-forcing moves.
