@@ -81,10 +81,9 @@ let init_position plist stm shd ghd =
     gote_king = (4, 4) ;
   }
 
-(*
 let apply_move position move =
-  let (pc, st, fn) = move in
-  let brd = position.board in
+  let (pc, st, (fx, fy)) = move in
+  let brd' = copy_board position.board in
   let mv = position.to_move in
   let shand = position.sente_hand in
   let ghand = position.gote_hand in
@@ -92,17 +91,44 @@ let apply_move position move =
   let gking = position.gote_king in
   match st with
   (* drop move *)
-  | None -> assert false
-  (* normal move *)
-  | _ ->
+  | None ->
       begin
-        match pc with
-        (* king's move *)
-        | (side, King) -> assert false
-        (* other move *)
-        | _  -> assert false
+        match mv with
+        | Sente ->
+            let shand' = remove_one pc shand in
+            let _ = brd'.(fx).(fy) <- Some (Sente, pc) in
+            {position with board = brd'; to_move = Gote; sente_hand = shand'}
+        | Gote ->
+            let ghand' = remove_one pc ghand in
+            let _ = brd'.(fx).(fy) <- Some (Gote, pc) in
+            {position with board = brd'; to_move = Sente; gote_hand = ghand'}
       end
-*)
+  (* normal move *)
+  | Some (sx, sy) ->
+      begin
+        let sking', gking' =
+          if pc != King then sking, gking
+          else begin
+            match mv with
+            | Sente -> (fx, fy), gking
+            | Gote -> sking, (fx, fy)
+          end in
+        let _ = brd'.(sx).(sy) <- None in
+        let _ = brd'.(fx).(fy) <- Some (mv, pc) in
+        let shand', ghand' =
+          begin
+            match position.board.(fx).(fy) with
+            | None -> shand, ghand
+            | Some (Sente, tpc) -> shand, tpc :: ghand
+            | Some (Gote, tpc) -> tpc :: shand, ghand
+          end in
+        { board = brd';
+          to_move = other mv;
+          sente_king = sking';
+          gote_king = gking';
+          sente_hand = shand';
+          gote_hand = ghand'}
+      end
 
 let start_position =
   init_position [(0, 0, (Sente, King));
