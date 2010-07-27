@@ -53,8 +53,18 @@ let find_moves pos side = []
 
 let won_position pos side =
   (List.length $ find_moves pos $ Types.other) side == 0
-
 let () = print_position Position.start_position
+;;
+
+let gt = Gametree.create_gametree Position.start_position in
+let Gametree.Gametree (_, brl) = gt in
+let brlf = Lazy.force brl in
+List.iter (fun (Gametree.Gametree (pp, _)) -> print_position pp) brlf
+(*
+let fb = List.hd brlf in
+let Gametree.Gametree (fp, _) = fb in
+print_position fp
+*)
 
 (*
 vim:sw=2

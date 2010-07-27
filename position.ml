@@ -81,7 +81,7 @@ let init_position plist stm shd ghd =
   }
 
 let apply_move position move =
-  let (pc, st, (fx, fy)) = move in
+  let {Types.what=(_,pc); start=st; finish=(fx, fy)} = move in
   let brd' = copy_board position.Types.board in
   let mv = position.Types.to_move in
   let shand = position.Types.sente_hand in
