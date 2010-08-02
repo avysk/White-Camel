@@ -20,6 +20,8 @@ type move = {
   finish : int * int ;
 }
 
+let no_move = { what = (Gote, King); start = None ; finish = (5, 5) }
+
 type hand = piece_t list
 
 type eval_t = Eval of int | Sente_won | Gote_won
@@ -35,6 +37,7 @@ type position = {
   (* The coordinates of kings are needed often *)
   sente_king : int * int ;
   gote_king : int * int ;
+  prev_move : move ;
   mutable evaluation : eval_t * depth_t
 }
 

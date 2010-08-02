@@ -16,12 +16,14 @@ let apply_move position move =
             let shand' = remove_one pc shand in
             let _ = brd'.(fx).(fy) <- Some (Types.Sente, pc) in
             {position with Types.board = brd';
-             to_move = Types.Gote; sente_hand = shand'}
+             to_move = Types.Gote; sente_hand = shand';
+             evaluation = Types.not_evaluated; prev_move = move}
         | Types.Gote ->
             let ghand' = remove_one pc ghand in
             let _ = brd'.(fx).(fy) <- Some (Types.Gote, pc) in
             {position with Types.board = brd';
-             to_move = Types.Sente; gote_hand = ghand'}
+             to_move = Types.Sente; gote_hand = ghand';
+             evaluation = Types.not_evaluated; prev_move = move}
       end
   (* normal move *)
   | Some (sx, sy) ->
@@ -48,5 +50,6 @@ let apply_move position move =
           gote_king = gking' ;
           sente_hand = shand' ;
           gote_hand = ghand' ;
+          prev_move = move ;
           evaluation = Types.not_evaluated}
       end
