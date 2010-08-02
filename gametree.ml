@@ -1,8 +1,23 @@
 open Utils
-type gametree = Gametree of (Types.position * (gametree list lazy_t))
+type gametree = Gametree of (Types.position * (gametree list Lazy.t))
 
 let rec create_gametree pos =
-  let branches = lazy (List.map (create_gametree $ (Apply_move.apply_move pos))
-  (* FIXME: not all moves should be here, some filtering should be done! *)
-  (Moves.find_all_moves pos pos.Types.to_move)) in
+  let apply = lazy (Apply_move.apply_move pos) in
+  let apply_moves = lazy (create_gametree $ (Lazy.force apply)) in
+  let all_moves = lazy (Moves.find_all_moves pos pos.Types.to_move) in
+  let possible = lazy (function
+    | Gametree (p, _) -> not (Check.under_check p pos.Types.to_move)) in
+  let all_branches = lazy (
+    List.map
+    (Lazy.force apply_moves)
+    (Lazy.force all_moves)
+  ) in
+  let branches = lazy (
+    List.filter
+    (Lazy.force possible)
+    (Lazy.force all_branches)
+  ) in
   Gametree (pos, branches)
+(*
+ * vim:sw=2
+ *)
