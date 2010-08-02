@@ -53,6 +53,7 @@ let find_moves pos side = []
 
 let won_position pos side =
   (List.length $ find_moves pos $ Types.other) side == 0
+
 let () = print_position Position.start_position
 ;;
 

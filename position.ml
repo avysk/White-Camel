@@ -78,6 +78,7 @@ let init_position plist stm shd ghd =
     gote_hand = ghd ;
     sente_king = (0, 0) ;
     gote_king = (4, 4) ;
+    evaluation = Types.not_evaluated ;
   }
 
 let start_position =

@@ -24,6 +24,11 @@ type move = {
 
 type hand = piece_t list
 
+type eval_t = Eval of int | Sente_won | Gote_won
+type depth_t = Depth of int
+
+val not_evaluated : eval_t * depth_t
+
 type position = {
   board : board_t ;
   to_move : side ;
@@ -32,6 +37,7 @@ type position = {
   (* The coordinates of kings are needed often *)
   sente_king : int * int ;
   gote_king : int * int ;
+  mutable evaluation : eval_t * depth_t
 }
 
 (*

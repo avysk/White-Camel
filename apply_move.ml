@@ -42,10 +42,11 @@ let apply_move position move =
             | Some (Types.Sente, tpc) -> shand, tpc :: ghand
             | Some (Types.Gote, tpc) -> tpc :: shand, ghand
           end in
-        { Types.board = brd';
-          to_move = Types.other mv;
-          sente_king = sking';
-          gote_king = gking';
-          sente_hand = shand';
-          gote_hand = ghand'}
+        { Types.board = brd' ;
+          to_move = Types.other mv ;
+          sente_king = sking' ;
+          gote_king = gking' ;
+          sente_hand = shand' ;
+          gote_hand = ghand' ;
+          evaluation = Types.not_evaluated}
       end
