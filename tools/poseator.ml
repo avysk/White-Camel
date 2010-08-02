@@ -170,15 +170,9 @@ let drop_from_hand () =
     let _ =
       begin
         !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
-        let filter_one_if_two elt lst =
-          begin
-            (* if we remove two elts from lst, put one back *)
-            let tmp = List.filter ((!=) elt) lst in
-            if List.length lst - List.length tmp = 1 then tmp else elt :: tmp
-          end in
         match s with
-        | Sente -> cur_pos := {!cur_pos with sente_hand = filter_one_if_two p shand}
-        | Gote -> cur_pos := {!cur_pos with gote_hand = filter_one_if_two p ghand}
+        | Sente -> cur_pos := {!cur_pos with sente_hand = remove_one p shand}
+        | Gote -> cur_pos := {!cur_pos with gote_hand = remove_one p ghand}
       end in
     draw_position ()
 
