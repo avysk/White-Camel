@@ -66,7 +66,6 @@ let under_check position side =
   let side' = Types.other side in
   let brd = position.Types.board in
   under_check_close brd side' king || under_check_far brd side' king
->>>>>>> 0639df6e685636074e875f2f76a315441d62ba9c
 
 let init_position plist stm shd ghd =
   let ar = Array.make_matrix 5 5 None in
