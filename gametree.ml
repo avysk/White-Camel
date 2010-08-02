@@ -17,6 +17,7 @@ let rec create_gametree pos =
     (Lazy.force possible)
     (Lazy.force all_branches)
   ) in
+  (* NB: illegal mate by pawn drop should be excluded at position evaluation *)
   Gametree (pos, branches)
 (*
  * vim:sw=2
