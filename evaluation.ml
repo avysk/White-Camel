@@ -1,18 +1,18 @@
 let better_for_sente ev1 ev2 =
   match ev1, ev2 with
-  | Gote_won, _ -> ev2
-  | Sente_won, _ -> ev1
-  | _, Gote_won -> ev1
-  | _, Sente_won -> ev2
-  | Eval of e1, Eval of e2 -> Eval of (max e1 e2)
+  | Types.Gote_won, _ -> ev2
+  | Types.Sente_won, _ -> ev1
+  | _, Types.Gote_won -> ev1
+  | _, Types.Sente_won -> ev2
+  | Types.Eval e1, Types.Eval e2 -> Types.Eval (max e1 e2)
 
 let better_for_gote ev1 ev2 =
   match ev1, ev2 with
-  | Gote_won, _ -> ev1
-  | Sente_won, _ -> ev2
-  | _, Gote_won -> ev2
-  | _, Sente_won -> ev1
-  | Eval of e1, Eval of e2 -> Eval of (min e1 e2)
+  | Types.Gote_won, _ -> ev1
+  | Types.Sente_won, _ -> ev2
+  | _, Types.Gote_won -> ev2
+  | _, Types.Sente_won -> ev1
+  | Types.Eval e1, Types.Eval e2 -> Types.Eval (min e1 e2)
 
 let better = function
   | Types.Sente -> better_for_sente
@@ -23,55 +23,59 @@ let evaluate_board board side = 0 (* FIXME *)
 exception Checkmated
 
 let current_lost = function
-  | Types.Sente -> Gote_won
-  | Types.Gote -> Sente_won
+  | Types.Sente -> Types.Gote_won
+  | Types.Gote -> Types.Sente_won
 
 let current_won = function
-  | Types.Sente -> Sente_won
-  | Types.Gote -> Gote_won
+  | Types.Sente -> Types.Sente_won
+  | Types.Gote -> Types.Gote_won
 
-let rec update_evaluation depth =
-  (* Side effects! 'Evaluation' field in tree positions may be updated! *)
-  let Gametree (pos, branches) = tree in
-  match pos.evaluation with
+let rec update_evaluation depth tree =
+  (* Side effects! 'Types.Evaluation' field in tree positions may be updated! *)
+  let Gametree.Gametree (pos, branches) = tree in
+  match pos.Types.evaluation with
   (* nothing to do in case of a terminal position *)
-  | (Sente_won, _) -> ()
-  | (Gote_won, _) -> ()
+  | (Types.Sente_won, _) -> ()
+  | (Types.Gote_won, _) -> ()
   (* if position never was evaluated and we do not want evaluating branches,
    * evaluate the board position and that's it *)
-  | (_, -1) when d = 0 ->
-      pos.evaluation <- (Eval (evaluate_board pos.board, side), 0)
+  | e when e = Types.not_evaluated && depth = 0 ->
+      pos.Types.evaluation <-
+        (Types.Eval (evaluate_board pos.Types.board pos.Types.to_move), Types.Depth 0)
   (* if we already have better evaluation than needed, nothing to do *)
-  | (_, Depth d) when d >= depth -> ()
-  | (Eval e, Depth d) ->
+  | (_, Types.Depth d) when d >= depth -> ()
+  | (Types.Eval e, Types.Depth d) ->
       if List.length (Lazy.force branches) = 0
       (* if checkmated, check if it happened by illegal pawn drop move *)
       then
-        (* if pawn drop move then
-          * begin
-            * pos.evaluation <- (Someone_won, 0) ;
-            * raise (Won 0);
-          * end
-          * else
-            *)
+        let pm = pos.Types.prev_move in
+        let pc = snd pm.Types.what in
+        let st = pm.Types.start in
+        if pc = Types.Pawn && st = None
+        then pos.Types.evaluation <- (current_won pos.Types.to_move, Types.Depth 0)
+        else
         (* No, checkmated legally, terminal position. Raise exception to
          * indicate no need to evaluate other moves one level up *)
-        pos.evaluation <- (current_lost, 0) ; raise Checkmated
+        pos.Types.evaluation <- (current_lost pos.Types.to_move, Types.Depth 0) ;
+        raise Checkmated
       else
         begin
           try
             (* Update evaluation in branches *)
             let () = List.iter (update_evaluation (depth - 1)) (Lazy.force branches) in
-            let side = pos.to_move in
-            let bcmp x y = (better side) x y.evaluation in
+            let side = pos.Types.to_move in
+            let bcmp x = function
+              | Gametree.Gametree (p, _) ->
+                  (better side) x (fst p.Types.evaluation)
+            in
             let min_eval = current_lost side in
             (* Find the best move *)
             let e = List.fold_left bcmp min_eval (Lazy.force branches) in
-            pos.evaluation <- (e, depth)
+            pos.Types.evaluation <- (e, Types.Depth depth)
           with Checkmated ->
             (* One of the moves checkmates the opponent. No need to evaluate
              * other branches. *)
-            pos.evaluation <- (current_won, 1)
+            pos.Types.evaluation <- (current_won pos.Types.to_move, Types.Depth 1)
         end
 
 
