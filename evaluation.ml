@@ -1,3 +1,5 @@
+open Utils
+
 let better_for_sente ev1 ev2 =
   match ev1, ev2 with
   | Types.Gote_won, _ -> ev2
@@ -18,7 +20,16 @@ let better = function
   | Types.Sente -> better_for_sente
   | Types.Gote -> better_for_gote
 
-let evaluate_board board side = 0 (* FIXME *)
+let evaluate_right_away pos = 
+  let brd = pos.Types.board in
+  let tmp1 = Array.map Array.to_list brd in
+  let tmp2 = Array.to_list tmp1 in
+  let lst = List.flatten tmp2 in
+  let _addv acc = (+) acc $ Dna.piece_value in
+  let ev_brd = List.fold_left _addv 0 lst in
+  let ev_sh = Dna.hand_value pos.Types.sente_hand in
+  let ev_gh = Dna.hand_value pos.Types.gote_hand in
+  ev_brd + ev_sh - ev_gh
 
 exception Checkmated
 
@@ -41,7 +52,7 @@ let rec update_evaluation depth tree =
    * evaluate the board position and that's it *)
   | e when e = Types.not_evaluated && depth = 0 ->
       pos.Types.evaluation <-
-        (Types.Eval (evaluate_board pos.Types.board pos.Types.to_move), Types.Depth 0)
+        (Types.Eval (evaluate_right_away pos), Types.Depth 0)
   (* if we already have better evaluation than needed, nothing to do *)
   | (_, Types.Depth d) when d >= depth -> ()
   | (Types.Eval e, Types.Depth d) ->
