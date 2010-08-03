@@ -12,7 +12,8 @@ type keybindings = {
   take_or_place : int ;
   to_hand : int ;
   from_hand : int ;
-  verify : int
+  verify : int ;
+  evaluate : int
 }
 
 let cmd = {
@@ -27,7 +28,8 @@ let cmd = {
   take_or_place = int_of_char ' ' ;
   to_hand = int_of_char 'h' ;
   from_hand = int_of_char 'd' ;
-  verify = int_of_char 'v'
+  verify = int_of_char 'v' ;
+  evaluate = int_of_char 'e'
 }
 
 (*

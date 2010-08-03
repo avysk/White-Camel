@@ -186,6 +186,27 @@ let verify () =
       if under_check !cur_pos Gote then "Gote is under check" else "Gote: ok" in
     failwith (res1 ^ res2)
 
+let evaluate () =
+  if !buf != None
+  then failwith "Buffer is not empty"
+  else
+    let res =
+      try
+        let pos = {!cur_pos with Types.evaluation = Types.not_evaluated} in
+        let gt = Gametree.create_gametree pos in
+        let () = Evaluation.update_evaluation 4 gt in
+        let Gametree.Gametree (pos, _) = gt in
+        let ev = pos.Types.evaluation in
+        begin
+          match ev with
+          | (Sente_won, _) -> "Sente won"
+          | (Gote_won, _) -> "Gote won"
+          | (Eval e, _) -> string_of_int e
+        end
+      with Evaluation.Checkmated -> "Checkmate"
+    in
+    failwith res
+
 let rec mainloop () =
   try
     let _ =
@@ -208,6 +229,7 @@ let rec mainloop () =
       | c when c = cmd.to_hand -> curs_to_hand ()
       | c when c = cmd.from_hand -> drop_from_hand ()
       | c when c = cmd.verify -> verify ()
+      | c when c = cmd.evaluate -> evaluate ()
       | _ -> failwith "Unknown command"
     in
     let () = clear_status () in
