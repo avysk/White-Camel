@@ -22,9 +22,7 @@ let better = function
 
 let evaluate_right_away pos = 
   let brd = pos.Types.board in
-  let tmp1 = Array.map Array.to_list brd in
-  let tmp2 = Array.to_list tmp1 in
-  let lst = List.flatten tmp2 in
+  let lst = board_to_list brd in
   let _addv acc = (+) acc $ Dna.piece_value in
   let ev_brd = List.fold_left _addv 0 lst in
   let ev_sh = Dna.hand_value pos.Types.sente_hand in

@@ -23,6 +23,10 @@ let remove_one elt lst =
   let tmp = List.filter ((!=) elt) lst in
   if List.length lst - List.length tmp = 1 then tmp else elt :: tmp
 
+(* convert board to a list *)
+let board_to_list brd =
+  let tmp = Array.map Array.to_list brd in
+  (List.flatten $ Array.to_list) tmp
 (*
 vim:sw=2
 *)
