@@ -1,6 +1,19 @@
 open Utils
 open Types
 
+(* This is a state of the art code! It uses lazy evaluation, and recursive
+ * types, and weak hash table! :-) *)
+
+(* Gametree consists of the root position, and the lazy list of gametrees with
+ * roots in positions arising after all possible moves. When a child gametree is
+ * instantiated (by Lazy.force-ing the list of gametrees) its existance in
+ * checked in the global weak hash table. If it's not there, it's added there.
+ * If it's there, we take gametree from hash table instead. The benefit is that
+ * the same root position in different places of the starting tree will give us
+ * the same (phisically) object as a gametree, so after the position is
+ * evaluated somewhere in a tree (forcing child branches as deep as needed), in
+ * all other places it's available as already evaluated *)
+
 type gametree = Gametree of (Types.position * (gametree list Lazy.t))
 
 module PosHash = 
@@ -12,7 +25,8 @@ module PosHash =
       let Gametree (pos1, _) = gt1 in
       let Gametree (pos2, _) = gt2 in
       pos1.to_move = pos2.to_move &&
-      pos1.sente_king = pos2.gote_king &&
+      pos1.sente_king = pos2.sente_king &&
+      pos1.gote_king = pos2.gote_king &&
       pos1.board = pos2.board &&
       begin
         let sh1 = pos1.sente_hand in
@@ -46,7 +60,15 @@ let rec create_gametree pos =
     (Lazy.force all_branches)
   ) in
   (* NB: illegal mate by pawn drop should be excluded at position evaluation *)
-  Gametree (pos, branches)
+  let gt_tmp = Gametree (pos, branches) in
+(*
+  let _ =
+   try
+     let _ = WeakPosHash.find global_weak_pos_hash gt_tmp in
+     print_string "HIT "
+   with Not_found  -> () in
+*)
+   WeakPosHash.merge global_weak_pos_hash gt_tmp
 (*
  * vim:sw=2
  *)
