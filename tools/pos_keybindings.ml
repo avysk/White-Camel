@@ -13,7 +13,8 @@ type keybindings = {
   to_hand : int ;
   from_hand : int ;
   verify : int ;
-  evaluate : int
+  evaluate : int ;
+  checksum : int
 }
 
 let cmd = {
@@ -29,7 +30,8 @@ let cmd = {
   to_hand = int_of_char 'h' ;
   from_hand = int_of_char 'd' ;
   verify = int_of_char 'v' ;
-  evaluate = int_of_char 'e'
+  evaluate = int_of_char 'e' ;
+  checksum = int_of_char 'C'
 }
 
 (*

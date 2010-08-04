@@ -207,6 +207,9 @@ let evaluate () =
     in
     failwith res
 
+let checksum () =
+  failwith (Printf.sprintf "%x" (Crc.pos_crc !cur_pos))
+
 let rec mainloop () =
   try
     let _ =
@@ -230,6 +233,7 @@ let rec mainloop () =
       | c when c = cmd.from_hand -> drop_from_hand ()
       | c when c = cmd.verify -> verify ()
       | c when c = cmd.evaluate -> evaluate ()
+      | c when c = cmd.checksum -> checksum ()
       | _ -> failwith "Unknown command"
     in
     let () = clear_status () in

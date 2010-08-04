@@ -11,7 +11,8 @@ type keybindings = {
   to_hand : int ;
   from_hand : int ;
   verify : int ;
-  evaluate : int
+  evaluate : int ;
+  checksum : int
 }
 
 val cmd : keybindings
