@@ -27,6 +27,20 @@ let remove_one elt lst =
 let board_to_list brd =
   let tmp = Array.map Array.to_list brd in
   (List.flatten $ Array.to_list) tmp
+
+(* check two lists for equality, ignoring the order of elements *)
+let rec (@=@) l1 l2 =
+  match l1, l2 with
+  | [], [] -> true
+  | [], _ -> false
+  | _, [] -> false
+  | hd1 :: [], hd2 :: [] -> hd1 = hd2
+  | hd :: tl, _ ->
+      let l1p1, l1p2 = List.partition ( (=) hd ) l1 in
+      let l2p1, l2p2 = List.partition ( (=) hd ) l2 in
+      List.length l1p1 = List.length l2p1 &&
+      l1p2 @=@ l2p2
+
 (*
 vim:sw=2
 *)

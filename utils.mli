@@ -9,7 +9,10 @@ val copy_board : 'a array array -> 'a array array
 val remove_one : 'a -> 'a list -> 'a list
 
 (* convert board to a list *)
-val board_to_list: 'a array array -> 'a list
+val board_to_list : 'a array array -> 'a list
+
+(* compare two lists, ignoring the order of elements *)
+val (@=@) : 'a list -> 'a list -> bool
 
 (*
  vim:sw=2
