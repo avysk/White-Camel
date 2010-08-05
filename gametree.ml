@@ -14,7 +14,7 @@ open Types
  * evaluated somewhere in a tree (forcing child branches as deep as needed), in
  * all other places it's available as already evaluated *)
 
-type gametree = Gametree of (Types.position * (gametree list Lazy.t))
+type gametree = Gametree of (position * (gametree list Lazy.t))
 
 module PosHash = 
   struct
@@ -41,14 +41,16 @@ module PosHash =
 
 module WeakPosHash = Weak.Make(PosHash)
 
-let global_weak_pos_hash = WeakPosHash.create 100000 (* TODO: 100000 ? *)
+;;
+
+let global_weak_pos_hash = WeakPosHash.create 500000 (* TODO: 500000 ? *)
 
 let rec create_gametree pos =
   let apply = lazy (Apply_move.apply_move pos) in
   let apply_moves = lazy (create_gametree $ (Lazy.force apply)) in
-  let all_moves = lazy (Moves.find_all_moves pos pos.Types.to_move) in
+  let all_moves = lazy (Moves.find_all_moves pos pos.to_move) in
   let possible = lazy (function
-    | Gametree (p, _) -> not (Check.under_check p pos.Types.to_move)) in
+    | Gametree (p, _) -> not (Check.under_check p pos.to_move)) in
   let all_branches = lazy (
     List.map
     (Lazy.force apply_moves)
@@ -61,14 +63,7 @@ let rec create_gametree pos =
   ) in
   (* NB: illegal mate by pawn drop should be excluded at position evaluation *)
   let gt_tmp = Gametree (pos, branches) in
-(*
-  let _ =
-   try
-     let _ = WeakPosHash.find global_weak_pos_hash gt_tmp in
-     print_string "HIT "
-   with Not_found  -> () in
-*)
-   WeakPosHash.merge global_weak_pos_hash gt_tmp
+  WeakPosHash.merge global_weak_pos_hash gt_tmp
 (*
  * vim:sw=2
  *)

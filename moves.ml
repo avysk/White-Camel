@@ -90,7 +90,8 @@ let moves_for_piece situation =
 
 (* Generate the list of all possible drops from the given hand
  * to the 'point' square. Move validity (check situation, pawn drops)
- * is not checked. *)
+ * is not checked. To find how illegal pawn drops are dealt with, grep
+ * ILLEGAL_PAWN_DROP *)
 let generate_drops hand side point =
   let drop1 piece = {Types.what = (side, piece);
                      start = None; finish = point} in
