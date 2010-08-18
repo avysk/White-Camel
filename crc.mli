@@ -1,1 +1,3 @@
-val pos_crc : Types.position -> int
+open Types
+
+val pos_crc : position -> int

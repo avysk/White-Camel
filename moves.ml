@@ -1,4 +1,5 @@
 open Utils
+open Types
 
 (* Return the list of the moves the given piece may do from 'point' by
  * moving one step along 'delta' vector.  Raises 'Invalid argument' when
@@ -13,25 +14,25 @@ let check_step (brd, side, piece, point) delta =
   | _ ->
       let st = Some point in
       (* The move without promotion :: possible promotion move *)
-      {Types.what = piece; start = st; finish = point'} ::
+      {what = piece; start = st; finish = point'} ::
         let j = snd point in 
         let nj = snd point' in
-        if side = Types.Sente && nj < 4 && j < 4 ||
-           side = Types.Gote && nj > 0 && j > 0
+        if side = Sente && nj < 4 && j < 4 ||
+           side = Gote && nj > 0 && j > 0
         then [] (* the move is not to or from promotion area *)
         else
           match snd piece with (* promotion is possible *)
-          | Types.Pawn ->
-              [{Types.what = (side, Rules.turnover Types.Pawn);
+          | Pawn ->
+              [{what = (side, Rules.turnover Pawn);
                 start = st; finish = point'}]
-          | Types.Silver ->
-              [{Types.what = (side, Rules.turnover Types.Silver);
+          | Silver ->
+              [{what = (side, Rules.turnover Silver);
                 start = st; finish = point'}]
-          | Types.Bishop ->
-              [{Types.what = (side, Rules.turnover Types.Bishop);
+          | Bishop ->
+              [{what = (side, Rules.turnover Bishop);
                 start = st; finish = point'}]
-          | Types.Rook ->
-              [{Types.what = (side, Rules.turnover Types.Rook);
+          | Rook ->
+              [{what = (side, Rules.turnover Rook);
                 start = st; finish = point'}]
           | _ -> [] (* nothing else can be promoted *)
 
@@ -60,9 +61,9 @@ let check_slide situation delta =
   (* 'start' value in the moves, returned by check_slide_r, may be wrong,
    * so it should be fixed here *)
   let fix_move m =
-    match m.Types.start with
+    match m.start with
     | Some x when x = point -> m
-    | _ ->{Types.what = piece; start = Some point; finish = m.Types.finish } in
+    | _ ->{what = piece; start = Some point; finish = m.finish } in
   let sliding_moves = check_slide_r [] situation delta in
   List.map fix_move (List.flatten sliding_moves)
 
@@ -70,7 +71,7 @@ let check_slide situation delta =
  * according to the move rule mv *)
 let check_one_rule situation mv =
   match mv with
-  | (Types.Step, delta) ->
+  | (Step, delta) ->
       begin
         try check_step situation delta
         with
@@ -79,7 +80,7 @@ let check_one_rule situation mv =
         | Not_found _ ->
             [] (* the move is blocked by own piece *)
       end
-  | (Types.Slide, delta) -> check_slide situation delta
+  | (Slide, delta) -> check_slide situation delta
 
 (* Generate the list of all moves of the given piece at the given point.
  * Move validity (check situation) is not checked. *)
@@ -93,7 +94,7 @@ let moves_for_piece situation =
  * is not checked. To find how illegal pawn drops are dealt with, grep
  * ILLEGAL_PAWN_DROP *)
 let generate_drops hand side point =
-  let drop1 piece = {Types.what = (side, piece);
+  let drop1 piece = {what = (side, piece);
                      start = None; finish = point} in
   List.map drop1 hand
 
@@ -119,8 +120,8 @@ let rec find_all_moves_r acc brd point hand side =
  * is not checked.  Includes but does not force promotions. *)
 let find_all_moves pos side =
   let hand =
-    if side = Types.Sente then pos.Types.sente_hand else pos.Types.gote_hand in
-  find_all_moves_r [] pos.Types.board (0, 0) hand side
+    if side = Sente then pos.sente_hand else pos.gote_hand in
+  find_all_moves_r [] pos.board (0, 0) hand side
 
 (*
 vim:sw=2

@@ -1,3 +1,5 @@
-type gametree = private Gametree of (Types.position * (gametree list Lazy.t))
+open Types
 
-val create_gametree : Types.position -> gametree
+type gametree = private Gametree of (position * (gametree list Lazy.t))
+
+val create_gametree : position -> gametree

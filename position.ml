@@ -1,12 +1,13 @@
 open Utils
+open Types
 
 (* Checks if the king is attacked via one-step move by some side' piece *)
 let under_check_close brd side' king =
   let fw =
     match side' with
     (* Meaning of "forward" for the king *)
-    | Types.Sente -> -1
-    | Types.Gote -> 1
+    | Sente -> -1
+    | Gote -> 1
   in
   let piece_at delta pcs =
     try
@@ -60,11 +61,11 @@ let under_check_far brd side' king =
 let under_check position side =
   let king =
     match side with
-    | Types.Sente -> position.Types.sente_king
-    | Types.Gote -> position.Types.gote_king
+    | Sente -> position.sente_king
+    | Gote -> position.gote_king
   in
-  let side' = Types.other side in
-  let brd = position.Types.board in
+  let side' = other side in
+  let brd = position.board in
   under_check_close brd side' king || under_check_far brd side' king
 
 let init_position plist stm shd ghd =
@@ -72,29 +73,29 @@ let init_position plist stm shd ghd =
   let put_piece (x, y, p) = ar.(x).(y) <- Some p in
   let () = List.iter put_piece plist in
   {
-    Types.board = ar ;
+    board = ar ;
     to_move = stm ;
     sente_hand = shd ;
     gote_hand = ghd ;
     sente_king = (0, 0) ;
     gote_king = (4, 4) ;
-    prev_move = Types.no_move ;
-    evaluation = Types.not_evaluated ;
+    prev_move = no_move ;
+    evaluation = not_evaluated ;
   }
 
 let start_position =
-  init_position [(0, 0, (Types.Sente, Types.King));
-                 (1, 0, (Types.Sente, Types.Gold));
-                 (2, 0, (Types.Sente, Types.Silver));
-                 (3, 0, (Types.Sente, Types.Bishop));
-                 (4, 0, (Types.Sente, Types.Rook));
-                 (0, 1, (Types.Sente, Types.Pawn));
-                 (4, 3, (Types.Gote, Types.Pawn));
-                 (0, 4, (Types.Gote, Types.Rook));
-                 (1, 4, (Types.Gote, Types.Bishop));
-                 (2, 4, (Types.Gote, Types.Silver));
-                 (3, 4, (Types.Gote, Types.Gold));
-                 (4, 4, (Types.Gote, Types.King))] Types.Sente [] []
+  init_position [(0, 0, (Sente, King));
+                 (1, 0, (Sente, Gold));
+                 (2, 0, (Sente, Silver));
+                 (3, 0, (Sente, Bishop));
+                 (4, 0, (Sente, Rook));
+                 (0, 1, (Sente, Pawn));
+                 (4, 3, (Gote, Pawn));
+                 (0, 4, (Gote, Rook));
+                 (1, 4, (Gote, Bishop));
+                 (2, 4, (Gote, Silver));
+                 (3, 4, (Gote, Gold));
+                 (4, 4, (Gote, King))] Sente [] []
 
 (*
  vim:sw=2

@@ -1,12 +1,13 @@
 open Utils
+open Types
 
 let under_check_close brd side' king =
 (* Checks if the king is attacked via one-step move by some side' piece *)
   let fw =
     match side' with
     (* Meaning of "forward" for the king *)
-    | Types.Sente -> -1
-    | Types.Gote -> 1
+    | Sente -> -1
+    | Gote -> 1
   in
   let piece_at delta pcs =
     try
@@ -59,10 +60,10 @@ let under_check_far brd side' king =
 let under_check position side =
   let king =
     match side with
-    | Types.Sente -> position.Types.sente_king
-    | Types.Gote -> position.Types.gote_king
+    | Sente -> position.sente_king
+    | Gote -> position.gote_king
   in
-  let side' = Types.other side in
-  let brd = position.Types.board in
+  let side' = other side in
+  let brd = position.board in
   under_check_close brd side' king || under_check_far brd side' king
 

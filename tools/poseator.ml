@@ -1,8 +1,10 @@
-open Curses
-open Acs
-
 open Utils
 open Types
+
+open Curses
+open Acs
+(* Curses.Acs has 'board' in it, so we have to use '.Types.board' below *)
+
 open Rules
 open Position
 open Check
@@ -192,11 +194,11 @@ let evaluate () =
   else
     let res =
       try
-        let pos = {!cur_pos with Types.evaluation = Types.not_evaluated} in
+        let pos = {!cur_pos with evaluation = not_evaluated} in
         let gt = Gametree.create_gametree pos in
         let () = Evaluation.update_evaluation 2 gt in
         let Gametree.Gametree (pos, _) = gt in
-        let ev = pos.Types.evaluation in
+        let ev = pos.evaluation in
         begin
           match ev with
           | (Sente_won, _) -> "Sente won"

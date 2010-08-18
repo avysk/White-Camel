@@ -4,20 +4,20 @@ open Types
 exception Checkmated
 
 let piece_t_to_string = function
-  | Types.Pawn -> "Pn"
-  | Types.King -> "Kg"
-  | Types.Gold -> "Gd"
-  | Types.Silver -> "Sr"
-  | Types.Bishop -> "Bp"
-  | Types.Rook -> "Rk"
-  | Types.Tokin -> "Tn"
-  | Types.GoldS -> "Gs"
-  | Types.DragonKing -> "DK"
-  | Types.DragonHorse -> "DH"
+  | Pawn -> "Pn"
+  | King -> "Kg"
+  | Gold -> "Gd"
+  | Silver -> "Sr"
+  | Bishop -> "Bp"
+  | Rook -> "Rk"
+  | Tokin -> "Tn"
+  | GoldS -> "Gs"
+  | DragonKing -> "DK"
+  | DragonHorse -> "DH"
 
 let color_to_string = function
-  | Types.Sente -> "_"
-  | Types.Gote -> "*"
+  | Sente -> "_"
+  | Gote -> "*"
 
 let pts = function
   | None -> "   "
@@ -30,7 +30,7 @@ let print_piece pc (x, y) =
 
 let print_position pos =
   let ofile = open_out_gen [Open_append] 0666 "/tmp/out" in
-  let brd = pos.Types.board in
+  let brd = pos.board in
   begin
     Printf.fprintf ofile "+---+---+---+---+---+\n" ;
     for row = 4 downto 0 do
@@ -47,14 +47,14 @@ let print_position pos =
     let ppc = Printf.fprintf ofile " %s" $ piece_t_to_string in
     begin
       Printf.fprintf ofile "Sente hand:" ;
-      List.iter ppc pos.Types.sente_hand ;
+      List.iter ppc pos.sente_hand ;
       Printf.fprintf ofile"\nGote hand:" ;
-      List.iter ppc pos.Types.gote_hand ;
+      List.iter ppc pos.gote_hand ;
     end ;
     Printf.fprintf ofile"\n%s to move.\n" (
-      match pos.Types.to_move with
-      | Types.Sente -> "Sente"
-      | Types.Gote -> "Gote") ;
+      match pos.to_move with
+      | Sente -> "Sente"
+      | Gote -> "Gote") ;
     close_out ofile
   end
 
@@ -122,11 +122,10 @@ let rec update_evaluation depth tree =
               (List.length p.sente_hand) +
               (List.length p.gote_hand) in
 (*
-              pos.board @@ p.prev_move.finish != None in
-*)
         let checking_move = function
           | Gametree.Gametree (p, _) ->
               Check.under_check p p.to_move in
+*)
         let ev = List.fold_left
         (fun e t ->
           if not (taking_move t)
