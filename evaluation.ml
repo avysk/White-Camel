@@ -159,6 +159,9 @@ let rec update_evaluation depth tree =
       if List.length (Lazy.force branches) = 0
       (* ILLEGAL_PAWN_DROP *)
       (* if checkmated, check if it happened by illegal pawn drop move *)
+      (* FIXME: THIS CODE IS BUGGY! The bug is unlikely to manifest, but
+       * if the position with checkmated pawn drop can be later achieved by
+       * normal pawn move, it will be rejected. *)
       then
         let pm = pos.prev_move in
         let pc = snd pm.what in
