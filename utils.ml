@@ -33,12 +33,18 @@ let (@@) m (x, y) = m.(x).(y)
 let copy_board brd =
   Array.init 5 (fun i -> Array.copy brd.(i))
 
-(* remove exactly one element from list which may contain two of those *)
-(* Should be rewritten as recursive function with accumulator, to have tail
- * recursion FIXME *)
-let remove_one elt lst =
-  let tmp = List.filter ((!=) elt) lst in
-  if List.length lst - List.length tmp = 1 then tmp else elt :: tmp
+ (** @return [lst] with the first occurence of [elt] removed
+    when called as {!Utils.remove_one} [elt lst]
+    @param acc accumulator for internal purposes, should not be used
+    @param lst a list
+    @param elt element to remove *)
+let rec remove_one ?(acc=[]) elt lst =
+  match lst with
+  | e :: tl when e = elt -> List.rev_append acc tl
+  | [] -> raise Not_found
+  | hd :: tl ->
+      let new_acc = hd :: acc in
+      remove_one ~acc:new_acc elt tl
 
 (* convert board to a list *)
 let board_to_list brd =

@@ -18,8 +18,9 @@ val (@@) : 'a array array -> int * int -> 'a
 (** Copy matrix *)
 val copy_board : 'a array array -> 'a array array
 
-(** Remove exactly one element from list which may contain two of those *)
-val remove_one : 'a -> 'a list -> 'a list
+(** Remove exactly one element from list which may contain many
+    @raise Not_found if [lst] does not contain [elt] *)
+val remove_one : ?acc:'a list -> 'a -> 'a list -> 'a list
 
 (** Convert board to a list *)
 val board_to_list : 'a array array -> 'a list
