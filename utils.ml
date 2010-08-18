@@ -19,6 +19,8 @@ let copy_board brd =
   Array.init 5 (fun i -> Array.copy brd.(i))
 
 (* remove exactly one element from list which may contain two of those *)
+(* Should be rewritten as recursive function with accumulator, to have tail
+ * recursion FIXME *)
 let remove_one elt lst =
   let tmp = List.filter ((!=) elt) lst in
   if List.length lst - List.length tmp = 1 then tmp else elt :: tmp
