@@ -1,5 +1,5 @@
 (** Defines the common types and some global constants and functions,
- * directly related with types definitions. *)
+  directly related with types definitions. *)
 
 (** Possible kinds of pieces *) 
 type piece_t =

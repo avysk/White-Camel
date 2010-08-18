@@ -1,20 +1,35 @@
-(* function composition *)
+(** Utilities. *)
+
+(** @return [f(g(x))]; normally third argument is omitted so composition of [f]
+    and [g] is returned 
+    @param f first function
+    @param g second function @param x argument for the second function, normally omitted *)
 let ($) f g x = f (g x)
 
-(* constructing tuples of list *)
-let ( @* ) elt lst = List.map (fun t -> (elt, t)) lst
+(** @return the list of tuples [\[(elt, l1); (elt, l2); ...\]]
+    @param elt some element
+    @param lst a list [\[l1; l2; ...\]] *)
+let (@*) elt lst = List.map (fun t -> (elt, t)) lst
 
-(* iterating over the board *)
+(** Given the coordinates of the cell on the board, the funcion finds the next
+    cell, incrementing column if possible; if not, column is set to 0 and row is
+    incremented instead. The number of columns is 5; the number of rows is not
+    limited. Counting starts from 0.
+    @return the coordinates of the next cell on the board *)
 let incr = function
   | (4, j) -> (0, j + 1)
   | (i, j) -> (i + 1, j)
 
-(* adding tuples *)
+(** @return integer 2-tuple which is a coordinate-wise sum of two integer 2-tuples *)
 let (++) (a, b) (c, d) = (a + c, b + d)
 
 (* accessing matrix *)
+(** @param m matrix
+    @return the element of [m] indexed by an integer 2-tuple *)
 let (@@) m (x, y) = m.(x).(y)
 
+(** @param brd An array 5 x N
+    @return copy of [brd] which does not share any elements with [brd] *)
 let copy_board brd =
   Array.init 5 (fun i -> Array.copy brd.(i))
 
