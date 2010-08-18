@@ -1,9 +1,20 @@
-type piece_t = Pawn | King | Gold | Silver | Bishop | Rook | Tokin | GoldS | DragonKing | DragonHorse
+type piece_t =
+  | Pawn
+  | King
+  | Gold
+  | Silver
+  | Bishop
+  | Rook
+  | Tokin
+  | GoldS
+  | DragonHorse
+  | DragonKing
 
 let all_pieces =
-  [Pawn; King; Gold; Silver; Bishop; Rook; Tokin; GoldS; DragonKing; DragonHorse]
+  [Pawn; King; Gold; Silver; Bishop; Rook; Tokin; GoldS; DragonHorse; DragonKing]
 
 type side = Sente | Gote
+
 let other = function
   | Sente -> Gote
   | Gote -> Sente
@@ -34,7 +45,6 @@ type position = {
   to_move : side ;
   sente_hand : hand ;
   gote_hand : hand ;
-  (* The coordinates of kings are needed often *)
   sente_king : int * int ;
   gote_king : int * int ;
   prev_move : move ;
