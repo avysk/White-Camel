@@ -3,6 +3,60 @@ open Types
 
 exception Checkmated
 
+let piece_t_to_string = function
+  | Types.Pawn -> "Pn"
+  | Types.King -> "Kg"
+  | Types.Gold -> "Gd"
+  | Types.Silver -> "Sr"
+  | Types.Bishop -> "Bp"
+  | Types.Rook -> "Rk"
+  | Types.Tokin -> "Tn"
+  | Types.GoldS -> "Gs"
+  | Types.DragonKing -> "DK"
+  | Types.DragonHorse -> "DH"
+
+let color_to_string = function
+  | Types.Sente -> "_"
+  | Types.Gote -> "*"
+
+let pts = function
+  | None -> "   "
+  | Some (sd, pct) -> color_to_string sd ^ (piece_t_to_string pct)
+
+let print_piece pc (x, y) =
+  let ofile = open_out_gen [Open_append] 0666 "/tmp/out" in
+  let _ = Printf.fprintf ofile "Taking %s at %d %d\n" (pts pc) x y in
+  close_out ofile
+
+let print_position pos =
+  let ofile = open_out_gen [Open_append] 0666 "/tmp/out" in
+  let brd = pos.Types.board in
+  begin
+    Printf.fprintf ofile "+---+---+---+---+---+\n" ;
+    for row = 4 downto 0 do
+      (* Printf.printf "|   |   |   |   |   |\n" ; *)
+      Printf.fprintf ofile "|%s|%s|%s|%s|%s|\n"
+      (pts brd.(0).(row))
+      (pts brd.(1).(row))
+      (pts brd.(2).(row))
+      (pts brd.(3).(row))
+      (pts brd.(4).(row)) ;
+      (* Printf.printf "|   |   |   |   |   |\n" ; *)
+      Printf.fprintf ofile "+---+---+---+---+---+\n" ;
+    done ;
+    let ppc = Printf.fprintf ofile " %s" $ piece_t_to_string in
+    begin
+      Printf.fprintf ofile "Sente hand:" ;
+      List.iter ppc pos.Types.sente_hand ;
+      Printf.fprintf ofile"\nGote hand:" ;
+      List.iter ppc pos.Types.gote_hand ;
+    end ;
+    Printf.fprintf ofile"\n%s to move.\n" (
+      match pos.Types.to_move with
+      | Types.Sente -> "Sente"
+      | Types.Gote -> "Gote") ;
+    close_out ofile
+  end
 
 let better_for_sente ev1 ev2 =
   match ev1, ev2 with
@@ -52,8 +106,52 @@ let rec update_evaluation depth tree =
   (* if position never was evaluated and we do not want evaluating branches,
    * evaluate the board position and that's it *)
   | e when e = not_evaluated && depth = 0 ->
-      pos.evaluation <-
-        (Eval (evaluate_current_board pos), Depth 0)
+      begin
+        let lst = Lazy.force branches in
+        let side = pos.to_move in
+        let bcmp x = function
+          | Gametree.Gametree (p, _) ->
+              (better side) x (fst p.evaluation) in
+        let taking_move = function
+          | Gametree.Gametree (p, _) ->
+(*
+              Check.under_check p p.to_move ||
+*)
+              (List.length pos.sente_hand) +
+              (List.length pos.gote_hand) <
+              (List.length p.sente_hand) +
+              (List.length p.gote_hand) in
+(*
+              pos.board @@ p.prev_move.finish != None in
+*)
+        let checking_move = function
+          | Gametree.Gametree (p, _) ->
+              Check.under_check p p.to_move in
+        let ev = List.fold_left
+        (fun e t ->
+          if not (taking_move t)
+          then e
+(*
+            begin 
+              if not (checking_move t) then e
+              else
+                let () = update_evaluation 1 t in
+                bcmp e t
+            end
+*)
+          else
+(*
+            let _ = print_position pos in
+            let Gametree.Gametree (p, _) = t in
+            let _ = print_piece (pos.board @@ p.prev_move.finish) p.prev_move.finish in
+            let _ = print_position p in
+*)
+            let () = update_evaluation 0 t in
+            bcmp e t) 
+          (Eval (evaluate_current_board pos))
+          lst in
+        pos.evaluation <- (ev, Depth 0)
+      end
   (* if we already have better evaluation than needed, nothing to do *)
   | (_, Depth d) when d >= depth -> ()
   | (Eval e, Depth d) ->
@@ -96,3 +194,5 @@ let rec update_evaluation depth tree =
 (*
  * vim:sw=2
  *)
+
+

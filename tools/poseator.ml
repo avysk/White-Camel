@@ -194,7 +194,7 @@ let evaluate () =
       try
         let pos = {!cur_pos with Types.evaluation = Types.not_evaluated} in
         let gt = Gametree.create_gametree pos in
-        let () = Evaluation.update_evaluation 4 gt in
+        let () = Evaluation.update_evaluation 2 gt in
         let Gametree.Gametree (pos, _) = gt in
         let ev = pos.Types.evaluation in
         begin
