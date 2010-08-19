@@ -49,34 +49,14 @@ let print_position pos =
       | Gote -> "Gote")
     end
 
-(* FIXME *)
-(*
-let find_moves pos side = []
-
-let won_position pos side =
-  (List.length $ find_moves pos $ other) side == 0
-
-*)
-
 ;;
 
-
-Gc.set { (Gc.get ()) with Gc.minor_heap_size = 50000000 }
+Gc.set { (Gc.get ()) with Gc.minor_heap_size = 100000000 }
 
 ;;
 
 let gt = Gametree.create_gametree Position.start_position in
 Evaluation.update_evaluation 3 gt
-(*
-let Gametree.Gametree (_, brl) = gt in
-let brlf = Lazy.force brl in
-List.iter (fun (Gametree.Gametree (pp, _)) -> print_position pp) brlf
-*)
-(*
-let fb = List.hd brlf in
-let Gametree.Gametree (fp, _) = fb in
-print_position fp
-*)
 
 (*
 vim:sw=2

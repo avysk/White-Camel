@@ -43,7 +43,7 @@ module WeakPosHash = Weak.Make(PosHash)
 
 ;;
 
-let global_weak_pos_hash = WeakPosHash.create 500000 (* TODO: 500000 ? *)
+let global_weak_pos_hash = WeakPosHash.create 1000000 (* TODO: 500000 ? *)
 
 let rec create_gametree pos =
   let apply = Apply_move.apply_move pos in
