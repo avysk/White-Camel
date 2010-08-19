@@ -35,44 +35,6 @@ let check_step (brd, side, piece, point) point' = function
       in
       normal_move :: promotion_move_lst
 
-(*
-(* Return the list of the moves the given piece may do from 'point' by
- * moving one step along 'delta' vector.  Raises 'Invalid argument' when
- * the move is out of the board's borders.  Raises 'Not found' when the
- * move is blocked by own piece.  Otherwise returns the list of one or
- * two (when promotion is available) moves. *)
-let check_step (brd, side, piece, point) delta =
-  let point' = point ++ delta in
-  let t = brd @@ point' in (* may raise Invalid_argument here *)
-  match t with
-  | Some (x, _) when x = side -> raise Not_found (* cannot eat own piece *)
-  | _ ->
-      let st = Some point in
-      (* The move without promotion :: possible promotion move *)
-      {what = piece; start = st; finish = point'} ::
-        let j = snd point in 
-        let nj = snd point' in
-        if side = Sente && nj < 4 && j < 4 ||
-           side = Gote && nj > 0 && j > 0
-        then [] (* the move is not to or from promotion area *)
-        else
-          match snd piece with (* promotion is possible *)
-          | Pawn ->
-              [{what = (side, Rules.turnover Pawn);
-                start = st; finish = point'}]
-          | Silver ->
-              [{what = (side, Rules.turnover Silver);
-                start = st; finish = point'}]
-          | Bishop ->
-              [{what = (side, Rules.turnover Bishop);
-                start = st; finish = point'}]
-          | Rook ->
-              [{what = (side, Rules.turnover Rook);
-                start = st; finish = point'}]
-          | _ -> [] (* nothing else can be promoted *)
-
-*)
-
 (* Construct the list of all sliding moves of the given piece from 'point'
  * along 'delta' vector.  NB: the 'start' value in returned moves
  * may be wrong since it may not be the real start value for the move.
@@ -135,7 +97,7 @@ let rec find_all_moves_r acc brd point hand side =
   let (nx, ny) as next = incr point in
   if ny = 5 then acc
   else
-    match brd @@ point with (* may raise Invalid_argument *)
+    match brd @@ point with
     | None ->
         let drops = generate_drops hand side point in
         find_all_moves_r (drops @ acc) brd next hand side
