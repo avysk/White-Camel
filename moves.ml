@@ -89,20 +89,6 @@ let rec check_slide_r ?(acc=[]) (brd, side, piece, point) delta =
     else acc'
   in
   do_or_default brd chk_mv acc point'
-(*
-  try
-    let one = check_step (brd, side, piece, point) delta in
-    let acc' = one :: acc in
-    let point' = point ++ delta in
-    if brd @@ point' = None
-    then check_slide_r acc' (brd, side, piece, point') delta
-    else acc'
-  with
-  (* If we moved past the border of the board , stop searching. *)
-  | Invalid_argument _ -> acc
-  (* If further moves are blocked by own piece, stop searching. *)
-  | Not_found _ -> acc
-*)
 
 (* Return the list of all sliding moves in the given situation
  * (meaning given piece on the board) along delta vector *)
