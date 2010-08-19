@@ -60,8 +60,13 @@ let won_position pos side =
 
 ;;
 
+
+Gc.set { (Gc.get ()) with Gc.minor_heap_size = 50000000 }
+
+;;
+
 let gt = Gametree.create_gametree Position.start_position in
-Evaluation.update_evaluation 2 gt
+Evaluation.update_evaluation 3 gt
 (*
 let Gametree.Gametree (_, brl) = gt in
 let brlf = Lazy.force brl in
