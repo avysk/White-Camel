@@ -1,5 +1,7 @@
 (** Contains different utility functions *)
 
+open Types
+
 (** Function composition *)
 val ($) : ('a -> 'b) -> ('c -> 'a) -> ('c -> 'b)
 
@@ -27,6 +29,9 @@ val board_to_list : 'a array array -> 'a list
 
 (** Compare two lists, ignoring the order of elements *)
 val (@=@) : 'a list -> 'a list -> bool
+
+(** Do something with board cell *)
+val do_or_default : board_t -> (cell -> 'a) -> 'a -> int * int -> 'a
 
 (*
  vim:sw=2

@@ -64,6 +64,19 @@ let rec (@=@) l1 l2 =
       List.length l1p1 = List.length l2p1 &&
       l1p2 @=@ l2p2
 
+(** @return function which takes coordinates tuple and returns default value if
+    coordinates are out of board; otherwise returns result of applying f to the
+    corresponding board cell
+    @param brd Board
+    @param f Function to apply to cell
+    @param default Default value to return if cell is out of board *)
+let do_or_default brd f default = function
+  | -1, _ -> default
+  | 5, _ -> default
+  | _, -1 -> default
+  | _, 5 -> default
+  | coord -> f (brd @@ coord)
+
 (*
 vim:sw=2
 *)
