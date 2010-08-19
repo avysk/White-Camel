@@ -1,6 +1,41 @@
 open Utils
 open Types
 
+(* Return the list of the moves the given piece may do from 'point' by moving
+ * one stop to point'. Expects that the point' is inside the board and cl is the
+ * cell value at point'. Returns the empty list when the move is blocked by own
+ * piece. Otherwise returns the list of one or two (when promotion is available)
+ * moves. *)
+let check_step (brd, side, piece, point) point' = function
+  | Some (x, _) when x = side -> [] (* cannot eat own piece *)
+  | _ ->
+      let st = Some point in
+      let normal_move = {what = piece; start = st; finish = point'} in
+      let promotion_move_lst =
+        let j = snd point in
+        let nj = snd point' in
+        if side = Sente && nj < 4 && j < 4 ||
+        side = Gote && nj > 0 && j > 0
+        then [] (* the move is not to or from promotion area *)
+        else
+          match snd piece with (* promotion is possible *)
+          | Pawn ->
+              [{what = (side, Rules.turnover Pawn);
+              start = st; finish = point'}]
+          | Silver ->
+              [{what = (side, Rules.turnover Silver);
+              start = st; finish = point'}]
+          | Bishop ->
+              [{what = (side, Rules.turnover Bishop);
+              start = st; finish = point'}]
+          | Rook ->
+              [{what = (side, Rules.turnover Rook);
+              start = st; finish = point'}]
+          | _ -> [] (* nothing else can be promoted *)
+      in
+      normal_move :: promotion_move_lst
+
+(*
 (* Return the list of the moves the given piece may do from 'point' by
  * moving one step along 'delta' vector.  Raises 'Invalid argument' when
  * the move is out of the board's borders.  Raises 'Not found' when the
@@ -36,11 +71,25 @@ let check_step (brd, side, piece, point) delta =
                 start = st; finish = point'}]
           | _ -> [] (* nothing else can be promoted *)
 
+*)
+
 (* Construct the list of all sliding moves of the given piece from 'point'
  * along 'delta' vector.  NB: the 'start' value in returned moves
  * may be wrong since it may not be the real start value for the move.
  * So the 'start' value should be fixed by calling function. *)
-let rec check_slide_r acc (brd, side, piece, point) delta =
+let rec check_slide_r ?(acc=[]) (brd, side, piece, point) delta =
+  let point' = point ++ delta in
+  let chk_mv cl =
+    let one = check_step (brd, side, piece, point) point' cl in
+    (* record found one-step moves *)
+    let acc' = one :: acc in
+    (* if we moved to empty cell, continue search *)
+    if cl = None then check_slide_r ~acc:acc' (brd, side, piece, point') delta
+    (* otherwise we hit own or opponent's piece so we are done *)
+    else acc'
+  in
+  do_or_default brd chk_mv acc point'
+(*
   try
     let one = check_step (brd, side, piece, point) delta in
     let acc' = one :: acc in
@@ -53,6 +102,7 @@ let rec check_slide_r acc (brd, side, piece, point) delta =
   | Invalid_argument _ -> acc
   (* If further moves are blocked by own piece, stop searching. *)
   | Not_found _ -> acc
+*)
 
 (* Return the list of all sliding moves in the given situation
  * (meaning given piece on the board) along delta vector *)
@@ -64,22 +114,16 @@ let check_slide situation delta =
     match m.start with
     | Some x when x = point -> m
     | _ ->{what = piece; start = Some point; finish = m.finish } in
-  let sliding_moves = check_slide_r [] situation delta in
+  let sliding_moves = check_slide_r situation delta in
   List.map fix_move (List.flatten sliding_moves)
 
 (* Return the list of moves for the given situation (piece on board)
  * according to the move rule mv *)
-let check_one_rule situation mv =
-  match mv with
+let check_one_rule situation = function
   | (Step, delta) ->
-      begin
-        try check_step situation delta
-        with
-        | Invalid_argument _ ->
-            [] (* the move is out of the board's borders *)
-        | Not_found _ ->
-            [] (* the move is blocked by own piece *)
-      end
+      let (brd, _, _, point) = situation in
+      let point' = point ++ delta in
+      do_or_default brd (check_step situation point') [] point'
   | (Slide, delta) -> check_slide situation delta
 
 (* Generate the list of all moves of the given piece at the given point.
@@ -102,8 +146,9 @@ let generate_drops hand side point =
  * given side to move.  The validity of moves (check situation, pawn drops) is
  * not checked.  Includes but does not force promotions. *)
 let rec find_all_moves_r acc brd point hand side =
-  try
-    let next = incr point in
+  let (nx, ny) as next = incr point in
+  if ny = 5 then acc
+  else
     match brd @@ point with (* may raise Invalid_argument *)
     | None ->
         let drops = generate_drops hand side point in
@@ -113,7 +158,6 @@ let rec find_all_moves_r acc brd point hand side =
         find_all_moves_r (mvs @ acc) brd next hand side
     (* we can move pieces only of own color *)
     | _ -> find_all_moves_r acc brd next hand side
-  with Invalid_argument _ -> acc (* We came to the 6th row, so finished *)
 
 (* Externally visible function.  Generate all moves in the given position for
  * the given side to move.  The validity of moves (check situation, pawn drops)
