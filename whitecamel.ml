@@ -51,7 +51,9 @@ let print_position pos =
 
 ;;
 
-Gc.set { (Gc.get ()) with Gc.minor_heap_size = 100000000 }
+Gc.set { (Gc.get ()) with
+         Gc.minor_heap_size = 100000000;
+         Gc.major_heap_increment = 25000000 }
 
 ;;
 
