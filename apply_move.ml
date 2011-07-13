@@ -8,6 +8,9 @@ let apply_move position move =
   let ghand = position.gote_hand in
   let sking = position.sente_king in
   let gking = position.gote_king in
+  let old_hash = position.hash in
+  let zh = Zobrist.update_hand in
+  let zb = Zobirst.update_board in
   match st with
   (* drop move *)
   | None ->
@@ -16,15 +19,20 @@ let apply_move position move =
         | Sente ->
             let shand' = remove_one pc shand in
             let _ = brd'.(fx).(fy) <- Some (Sente, pc) in
+            let new_hash = (zb (Sente, pc) fx fy $ zh (Sente, pc)) old_hash in
             {position with board = brd';
              to_move = Gote; sente_hand = shand';
-             evaluation = not_evaluated; prev_move = move}
+             evaluation = not_evaluated; prev_move = move;
+             hash = new_hash}
         | Gote ->
             let ghand' = remove_one pc ghand in
             let _ = brd'.(fx).(fy) <- Some (Gote, pc) in
+            let hash_tmp = Zobrist.update_hand old_hash (Gote, pc) in
+            let new_hash = Zobrist.update_board hash_tmp (Gote, pc) fx fy in
             {position with board = brd';
              to_move = Sente; gote_hand = ghand';
-             evaluation = not_evaluated; prev_move = move}
+             evaluation = not_evaluated; prev_move = move;
+             hash = new_hash}
       end
   (* normal move *)
   | Some (sx, sy) ->
@@ -38,12 +46,17 @@ let apply_move position move =
           end in
         let _ = brd'.(sx).(sy) <- None in
         let _ = brd'.(fx).(fy) <- Some (mv, pc) in
-        let shand', ghand' =
+        let hash_tmp = Zobrist.update_hanh (Zobrist.update_hand
+                                              old_hash
+
+        let shand', ghand', new_hash =
           begin
             match position.board.(fx).(fy) with
-            | None -> shand, ghand
-            | Some (Sente, tpc) -> shand, tpc :: ghand
-            | Some (Gote, tpc) -> tpc :: shand, ghand
+            | None -> shand, ghand, hash_tmp
+            | Some (Sente, tpc) ->
+                shand, tpc :: ghand, Zobrist.update_hand hash_tmp (Gote, tpc)
+            | Some (Gote, tpc) ->
+                tpc :: shand, ghand, Zobrist.update_hand hash_tmp (Sente, tpc)
           end in
         { board = brd' ;
           to_move = other mv ;
@@ -52,5 +65,6 @@ let apply_move position move =
           sente_hand = shand' ;
           gote_hand = ghand' ;
           prev_move = move ;
-          evaluation = not_evaluated}
+          evaluation = not_evaluated ;
+          hash = new_hash}
       end

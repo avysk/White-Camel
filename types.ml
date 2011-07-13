@@ -48,6 +48,7 @@ type position = {
   sente_king : int * int ;
   gote_king : int * int ;
   prev_move : move ;
+  hash : int ;
   mutable evaluation : eval_t * depth_t
 }
 

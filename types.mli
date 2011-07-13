@@ -67,6 +67,7 @@ type position = {
   sente_king : int * int ; (** Coordinates of sente player's king *)
   gote_king : int * int ; (** Coordinates of gote player's king *)
   prev_move : move ; (** Previous move. Can contain totaly wrong value. *)
+  hash : int ; (** Hash value for the position. *)
   mutable evaluation : eval_t * depth_t (** Position evaluation. *)
 }
 

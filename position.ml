@@ -13,6 +13,7 @@ let init_position plist stm shd ghd =
     sente_king = (0, 0) ;
     gote_king = (4, 4) ;
     prev_move = no_move ;
+    hash = Zobrist.zhash ar shd ghd ;
     evaluation = not_evaluated ;
   }
 
