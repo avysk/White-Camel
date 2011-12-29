@@ -10,5 +10,7 @@ all:
 	ocamlbuild ${FLAGS} all.otarget
 clean:
 	ocamlbuild -clean
-docs: all
-	ocamlfind ocamldoc -html -m A -d docs -I _build *.mli *.ml
+#docs: all
+#	ocamlfind ocamldoc -html -m A -d docs -I _build *.mli *.ml
+docs:
+	ocamlbuild whitecamel.docdir/index.html
