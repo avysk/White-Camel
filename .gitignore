@@ -1,0 +1,5 @@
+_build/*
+*.native
+*.p.native
+.DS_*
+whitecamel.docdir
