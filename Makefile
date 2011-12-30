@@ -1,5 +1,7 @@
 main:
 	ocamlbuild whitecamel.native
+profile:
+	ocamlbuild ${FLAGS} whitecamel.p.native
 
 CURSES_LIB=-I,`ocamlfind query curses`
 #FLAGS=-lib curses -cflags -g,${CURSES_LIB} -lflags -g,${CURSES_LIB}
