@@ -16,7 +16,7 @@ open Types
 
 type gametree = Gametree of (position * (gametree list Lazy.t))
 
-module PosHash = 
+module PosHash =
   struct
     type t = gametree
     let hash = function

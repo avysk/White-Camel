@@ -78,7 +78,7 @@ let better = function
   | Sente -> better_for_sente
   | Gote -> better_for_gote
 
-let evaluate_current_board pos = 
+let evaluate_current_board pos =
   (* TODO: This is a main thing to determine the playing strength. Do it better! *)
   let brd = pos.board in
   let lst = board_to_list brd in

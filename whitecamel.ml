@@ -57,6 +57,11 @@ Gc.set { (Gc.get ()) with
 
 ;;
 
+print_string "Build: " ;
+print_string Version.version ;
+print_newline () ;
+flush stdout ;;
+
 let gt = Gametree.create_gametree Position.start_position in
 Evaluation.update_evaluation 3 gt
 

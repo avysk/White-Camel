@@ -2,7 +2,6 @@ open Utils
 open Types
 
 let apply_move position move =
-  let {what=(mv, pc); start=st; finish=(fx, fy)} = move in
   let brd' = copy_board position.board in
   let shand = position.sente_hand in
   let ghand = position.gote_hand in
@@ -11,7 +10,8 @@ let apply_move position move =
   let old_hash = position.hash in
   let zh = Zobrist.update_hand in
   let zb = Zobirst.update_board in
-  match st with
+  let { what = (mv, pc) ; start ; finish = (fx, fy) } = move in
+  match start with
   (* drop move *)
   | None ->
       begin

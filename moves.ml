@@ -61,7 +61,7 @@ let check_slide situation delta =
   let fix_move m =
     match m.start with
     | Some x when x = point -> m
-    | _ ->{what = piece; start = Some point; finish = m.finish } in
+    | _ -> {what = piece; start = Some point; finish = m.finish } in
   let sliding_moves = check_slide_r situation delta in
   List.map fix_move (List.flatten sliding_moves)
 
