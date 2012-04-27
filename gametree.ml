@@ -20,7 +20,8 @@ module PosHash =
   struct
     type t = gametree
     let hash = function
-      | Gametree (pos, _) -> Crc.pos_crc pos
+      | Gametree (pos, _) ->
+          Zobrist.zobrist_hash pos.board pos.sente_hand pos.gote_hand
     let equal gt1 gt2 =
       let Gametree (pos1, _) = gt1 in
       let Gametree (pos2, _) = gt2 in

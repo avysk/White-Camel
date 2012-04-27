@@ -1,5 +1,7 @@
 main:
-	ocamlbuild whitecamel.native
+	ocamlbuild ${FLAGS} whitecamel.native
+debug:
+	ocamlbuild ${FLAGS}  whitecamel.d.byte
 profile:
 	ocamlbuild ${FLAGS} whitecamel.p.native
 

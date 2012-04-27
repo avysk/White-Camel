@@ -2,6 +2,9 @@ open Utils
 open Types
 
 let apply_move position move =
+  let revert_side = function
+    | Sente -> Gote
+    | Gote -> Sente in
   let brd' = copy_board position.board in
   let shand = position.sente_hand in
   let ghand = position.gote_hand in
@@ -9,30 +12,32 @@ let apply_move position move =
   let gking = position.gote_king in
   let old_hash = position.hash in
   let zh = Zobrist.update_hand in
-  let zb = Zobirst.update_board in
+  let zb = Zobrist.update_board in
   let { what = (mv, pc) ; start = start; finish = (fx, fy) } = move in
   match start with
   (* drop move *)
   | None ->
       begin
+        let new_hash_hand = zh old_hash (mv, pc) in
+        let new_hash = zb new_hash_hand (mv, pc) fx fy in
+        let () = brd'.(fx).(fy) <- Some (mv, pc) in
         match mv with
-        | Sente ->
-            let shand' = remove_one pc shand in
-            let _ = brd'.(fx).(fy) <- Some (Sente, pc) in
-            let new_hash = (zb (Sente, pc) fx fy $ zh (Sente, pc)) old_hash in
-            {position with board = brd';
-             to_move = Gote; sente_hand = shand';
-             evaluation = not_evaluated; prev_move = move;
-             hash = new_hash}
-        | Gote ->
-            let ghand' = remove_one pc ghand in
-            let _ = brd'.(fx).(fy) <- Some (Gote, pc) in
-            let hash_tmp = Zobrist.update_hand old_hash (Gote, pc) in
-            let new_hash = Zobrist.update_board hash_tmp (Gote, pc) fx fy in
-            {position with board = brd';
-             to_move = Sente; gote_hand = ghand';
-             evaluation = not_evaluated; prev_move = move;
-             hash = new_hash}
+          | Sente ->
+              {position with
+                board = brd';
+                to_move = revert_side mv;
+                sente_hand = remove_one pc shand;
+                evaluation = not_evaluated;
+                prev_move = move;
+                hash = new_hash}
+          | Gote ->
+              {position with
+                board = brd';
+                to_move = revert_side mv;
+                gote_hand = remove_one pc ghand;
+                evaluation = not_evaluated;
+                prev_move = move;
+                hash = new_hash}
       end
   (* normal move *)
   | Some (sx, sy) ->
@@ -46,17 +51,21 @@ let apply_move position move =
           end in
         let _ = brd'.(sx).(sy) <- None in
         let _ = brd'.(fx).(fy) <- Some (mv, pc) in
-        let hash_tmp = Zobrist.update_hanh (Zobrist.update_hand
-                                              old_hash
-
+        let new_hash_board_from = zb old_hash (mv, pc) sx sy in
+        let new_hash_board_to = zb new_hash_board_from (mv, pc) fx fy in
         let shand', ghand', new_hash =
           begin
             match position.board.(fx).(fy) with
-            | None -> shand, ghand, hash_tmp
-            | Some (Sente, tpc) ->
-                shand, tpc :: ghand, Zobrist.update_hand hash_tmp (Gote, tpc)
-            | Some (Gote, tpc) ->
-                tpc :: shand, ghand, Zobrist.update_hand hash_tmp (Sente, tpc)
+            | None -> shand, ghand, new_hash_board_to
+            | Some (side, tpc) ->
+                let tpc' = Rules.basic_state tpc in
+                (* Remove piece from board *)
+                let new_hash_removed = zb new_hash_board_to (side, tpc) fx fy in
+                (* Add it to hand *)
+                let new_hash_hand = zh new_hash_removed (mv, tpc') in
+                match side with
+                  | Sente -> shand, tpc' :: ghand, new_hash_hand
+                  | Gote -> tpc' :: shand, ghand, new_hash_hand
           end in
         { board = brd' ;
           to_move = other mv ;
