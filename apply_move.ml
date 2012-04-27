@@ -7,7 +7,7 @@ let apply_move position move =
   let ghand = position.gote_hand in
   let sking = position.sente_king in
   let gking = position.gote_king in
-  let { what = (mv, pc) ; start ; finish = (fx, fy) } = move in
+  let { what = (mv, pc) ; start = start ; finish = (fx, fy) } = move in
   match start with
   (* drop move *)
   | None ->
