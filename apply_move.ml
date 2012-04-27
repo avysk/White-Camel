@@ -10,7 +10,7 @@ let apply_move position move =
   let old_hash = position.hash in
   let zh = Zobrist.update_hand in
   let zb = Zobirst.update_board in
-  let { what = (mv, pc) ; start ; finish = (fx, fy) } = move in
+  let { what = (mv, pc) ; start = start; finish = (fx, fy) } = move in
   match start with
   (* drop move *)
   | None ->
