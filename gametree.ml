@@ -60,6 +60,9 @@ let rec create_gametree pos =
   (* NB: illegal mate by pawn drop should be excluded at position evaluation *)
   let gt_tmp = Gametree (pos, branches) in
   WeakPosHash.merge global_weak_pos_hash gt_tmp
+
+let get_evaluation = function
+  | Gametree (p, _) -> (fst (p.evaluation))
 (*
  * vim:sw=2
  *)
