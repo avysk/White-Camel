@@ -1,13 +1,17 @@
+FLAGS=-use-ocamlfind
 main:
 	ocamlbuild ${FLAGS} whitecamel.native
 debug:
 	ocamlbuild ${FLAGS}  whitecamel.d.byte
 profile:
 	ocamlbuild ${FLAGS} whitecamel.p.native
+test:
+	ocamlbuild ${FLAGS} test/test.native
+	./test.native
 
-CURSES_LIB=-I,`ocamlfind query curses`
+#CURSES_LIB=-I,`ocamlfind query curses`
 #FLAGS=-lib curses -cflags -g,${CURSES_LIB} -lflags -g,${CURSES_LIB}
-FLAGS=-lib curses -cflags ${CURSES_LIB} -lflags ${CURSES_LIB}
+#FLAGS=-lib curses -cflags ${CURSES_LIB} -lflags ${CURSES_LIB}
 editor:
 	ocamlbuild ${FLAGS} tools/poseator.native
 all:
@@ -25,3 +29,5 @@ whitecamel.mltop: whitecamel.byte
 whitecamel.top: whitecamel.mltop
 	ocamlbuild ${FLAGS} whitecamel.top
 top: whitecamel.top
+
+.PHONY: main debug profile test editor all clean docs top

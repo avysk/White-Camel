@@ -1,1 +1,4 @@
 <tools>: include
+<tools/*>: package(curses)
+<test>: include
+<test/*>: package(ounit)

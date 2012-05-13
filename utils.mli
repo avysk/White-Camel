@@ -37,7 +37,7 @@ val (@@) : 'a array array -> int * int -> 'a
 val copy_board : 'a array array -> 'a array array
 
 (** Remove exactly one element from list which may contain many.
-@return the list with the first occurecnce of the given element removed.
+@return the list with the first occurence of the given element removed.
 @raise Not_found if the list does not contain the given element. *)
 val remove_one : 'a -> 'a list -> 'a list
 
