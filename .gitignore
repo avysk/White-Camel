@@ -3,3 +3,4 @@ _build/*
 *.p.native
 .DS_*
 whitecamel.docdir
+.*.swp
