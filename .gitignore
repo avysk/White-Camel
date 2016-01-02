@@ -3,6 +3,6 @@ setup.log
 _build/*
 *.native
 *.p.native
+whiteengine.docdir
 .DS_*
-whitecamel.docdir
 .*.swp
