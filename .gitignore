@@ -1,3 +1,5 @@
+setup.data
+setup.log
 _build/*
 *.native
 *.p.native
