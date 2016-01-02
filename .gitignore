@@ -1,5 +1,8 @@
+setup.data
+setup.log
 _build/*
 *.native
 *.p.native
 .DS_*
 whitecamel.docdir
+.*.swp

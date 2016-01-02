@@ -1,1 +1,27 @@
-<tools>: include
+# OASIS_START
+# DO NOT EDIT (digest: ad2103cc7228de53024f714282c3f32a)
+# Ignore VCS directories, you can use the same kind of rule outside
+# OASIS_START/STOP if you want to exclude directories that contains
+# useless stuff for the build process
+true: annot, bin_annot
+<**/.svn>: -traverse
+<**/.svn>: not_hygienic
+".bzr": -traverse
+".bzr": not_hygienic
+".hg": -traverse
+".hg": not_hygienic
+".git": -traverse
+".git": not_hygienic
+"_darcs": -traverse
+"_darcs": not_hygienic
+# Library whiteengine
+"src/lib/whiteengine.cmxs": use_whiteengine
+# Executable whitecamel
+"src/whitecamel.native": use_whiteengine
+<src/*.ml{,i,y}>: use_whiteengine
+# Executable poseator
+"src/tools/poseator.native": pkg_curses
+"src/tools/poseator.native": use_whiteengine
+<src/tools/*.ml{,i,y}>: pkg_curses
+<src/tools/*.ml{,i,y}>: use_whiteengine
+# OASIS_STOP

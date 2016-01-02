@@ -1,0 +1,7 @@
+S src/
+S src/tools/
+
+B _build/src
+B _build/src/tools
+
+PKG curses

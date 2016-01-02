@@ -12,7 +12,7 @@ val ($) : ('a -> 'b) -> ('c -> 'a) -> ('c -> 'b)
 
 (** Calculate direct product of one element and a list.
 @return [\[(elt, l1); (elt, l2); ...\]] given some element [elt] and a list [\[l1; l2; ...\]]. *)
-val (@*) : 'a -> ('b list) -> ('a * 'b) list
+val ( @* ) : 'a -> ('b list) -> ('a * 'b) list
 
 (** Calculate a component-wise sum of two pairs of integers.
 @return The pair of sums. *)
