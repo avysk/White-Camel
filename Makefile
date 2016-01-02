@@ -6,4 +6,8 @@ setup.data: setup.ml
 	ocaml setup.ml -configure --enable-ui
 clean:
 	ocaml setup.ml -clean
-.PHONY: clean
+distclean: clean
+	rm -f setup.data setup.log
+pristine: distclean
+	rm -f setup.ml _tags
+.PHONY: clean distclean pristine
