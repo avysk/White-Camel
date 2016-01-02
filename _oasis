@@ -10,8 +10,8 @@ Flag ui
 
 Library whiteengine
   Path: src/lib
-  Modules: Types, Utils, Gametree, Position, Evaluation
-  InternalModules: Apply_move, Check, Crc, Dna, Moves, Rules
+  Modules: Evaluation, Gametree, Position, Types, Utils
+  InternalModules: Apply_move, Check, Dna, Moves, Rules, Zobrist
   BuildTools: ocamlbuild
   CompiledObject: native
 
