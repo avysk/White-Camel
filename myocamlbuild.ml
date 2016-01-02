@@ -1,3 +1,6 @@
+(* OASIS_START *)
+(* OASIS_STOP *)
+
 (* Ocamlbuild plugin to create version.ml file *)
 
 open Ocamlbuild_plugin
@@ -10,15 +13,12 @@ open Unix
 
 let time_cmd = Printf.sprintf "echo \"Building at %f seconds since 01.01.1970.\" &&" (Unix.time ())
 
-(* let get_version = "if [ -z \"$(git diff-index --name-only HEAD)\" ] ; then
-  * echo \"let version = \\\"$(git rev-parse HEAD)\\\"\" ; else echo \"let
-  * version = \\\"$(git rev-parse HEAD)-modified\\\"\"; fi >" *)
-
 let create_version_file _ _ = Cmd (S [ Sh time_cmd ; A "sh" ; P "../scripts/find-version.sh" ; Sh ">" ; P "version.ml" ])
 
 let () = dispatch begin function
   | After_rules ->
-      rule "version.ml" ~prod: "version.ml" create_version_file
-  | _ -> ()
+    rule "version.ml" ~prod: "version.ml" create_version_file ;
+    dispatch_default After_rules
+  | x -> dispatch_default x
 end
 

@@ -1,7 +1,7 @@
-S .
-S tools/
+S src/
+S src/tools/
 
-B _build
-B _build/tools
+B _build/src
+B _build/src/tools
 
 PKG curses

@@ -1,16 +1,6 @@
-main:
-	ocamlbuild whitecamel.native
-profile:
-	ocamlbuild ${FLAGS} whitecamel.p.native
-
-CURSES_LIB=-I,`ocamlfind query curses`
-#FLAGS=-lib curses -cflags -g,${CURSES_LIB} -lflags -g,${CURSES_LIB}
-FLAGS=-lib curses -cflags ${CURSES_LIB} -lflags ${CURSES_LIB}
-editor:
-	ocamlbuild ${FLAGS} tools/poseator.native
-all:
-	ocamlbuild ${FLAGS} all.otarget
+dev:
+	oasis setup
+	ocaml setup.ml -configure --enable-ui
+	ocaml setup.ml -build
 clean:
-	ocamlbuild -clean
-docs:
-	ocamlbuild whitecamel.docdir/index.html
+	ocaml setup.ml -clean
