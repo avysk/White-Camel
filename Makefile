@@ -9,5 +9,5 @@ clean:
 distclean: clean
 	rm -f setup.data setup.log
 pristine: distclean
-	rm -f setup.ml _tags
+	rm -f setup.ml _tags src/lib/whiteengine.mldylib src/lib/whiteengine.mllib
 .PHONY: clean distclean pristine
