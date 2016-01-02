@@ -63,8 +63,15 @@ print_newline () ;
 flush stdout ;;
 
 let gt = Gametree.create_gametree Position.start_position in
-Evaluation.update_evaluation 3 gt
-
+Evaluation.update_evaluation 3 gt ;
+begin
+  match Gametree.get_evaluation gt with
+  | Eval ev -> print_int ev
+  | Sente_won -> print_string "Sente won"
+  | Gote_won -> print_string "Gote_won"
+end ;
+print_string "\n" ;
+print_position Position.start_position
 (*
 vim:sw=2
 *)
