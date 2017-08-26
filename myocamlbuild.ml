@@ -917,5 +917,16 @@ let () = dispatch begin function
     rule "version.ml" ~prod: "version.ml" create_version_file ;
     dispatch_default After_rules
   | x -> dispatch_default x
-end
+  end
+;;
 
+(* See https://github.com/ocaml/ocamlbuild/issues/236 *)
+begin
+  let ccflag ~lang ~phase ~flag =
+    pflag [lang; phase] flag (fun param -> S [A ("-"^flag); A param])
+  in
+  ["c"; "ocaml"] |> List.iter (fun lang ->
+      ["compile"; "link"] |> List.iter (fun phase ->
+          ["cc"; "ccopt"; "cclib"] |> List.iter (fun flag ->
+              ccflag ~lang ~phase ~flag)))
+end;;
