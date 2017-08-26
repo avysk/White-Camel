@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: ad2103cc7228de53024f714282c3f32a)
+# DO NOT EDIT (digest: 640da75ae28029762d5c6eaf8fbccfeb)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -24,4 +24,9 @@ true: annot, bin_annot
 "src/tools/poseator.native": use_whiteengine
 <src/tools/*.ml{,i,y}>: pkg_curses
 <src/tools/*.ml{,i,y}>: use_whiteengine
+# Executable test-main
+"tests/tests.native": pkg_oUnit
+"tests/tests.native": use_whiteengine
+<tests/*.ml{,i,y}>: pkg_oUnit
+<tests/*.ml{,i,y}>: use_whiteengine
 # OASIS_STOP

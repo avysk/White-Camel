@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: d93577b7bd7dddae4b1e1a04b53e7a77) *)
+(* DO NOT EDIT (digest: ba28d5570f9678de9fc185122b502c90) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -882,7 +882,12 @@ let package_default =
      MyOCamlbuildBase.lib_ocaml = [("whiteengine", ["src/lib"], [])];
      lib_c = [];
      flags = [];
-     includes = [("src/tools", ["src/lib"]); ("src", ["src/lib"])]
+     includes =
+       [
+          ("tests", ["src/lib"]);
+          ("src/tools", ["src/lib"]);
+          ("src", ["src/lib"])
+       ]
   }
   ;;
 
@@ -890,7 +895,7 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 894 "myocamlbuild.ml"
+# 899 "myocamlbuild.ml"
 (* OASIS_STOP *)
 
 (* Ocamlbuild plugin to create version.ml file *)

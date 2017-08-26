@@ -32,9 +32,31 @@ Executable poseator
   BuildDepends: whiteengine, curses
   CompiledObject: native
 
+#
+# Documentation.
+#
+
 Document whiteengine
   Title: "Whiteengine documentation"
   BuildTools+: ocamldoc
   XOCamlBuildPath: src/lib/
   XOcamlBuildLibraries: whiteengine
   Type: OCamlBuild (0.4)
+
+#
+# Tests.
+#
+
+Executable "test-main"
+  Path: tests/
+  MainIs: tests.ml
+  Install: False
+  CompiledObject: native
+  Build$: flag(tests)
+  BuildDepends: whiteengine, oUnit (>= 2.0.0)
+
+Test main
+  Type: custom (0.4)
+  Command: $test_main
+  WorkingDirectory: tests
+  TestTools: test-main
