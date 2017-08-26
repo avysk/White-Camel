@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: ad2103cc7228de53024f714282c3f32a)
+# DO NOT EDIT (digest: 1d2f66d62a2fca892718b55f98203f33)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -16,12 +16,24 @@ true: annot, bin_annot
 "_darcs": not_hygienic
 # Library whiteengine
 "src/lib/whiteengine.cmxs": use_whiteengine
+<src/lib/*.ml{,i,y}>: pkg_batteries
 # Executable whitecamel
+"src/whitecamel.native": pkg_batteries
 "src/whitecamel.native": use_whiteengine
+<src/*.ml{,i,y}>: pkg_batteries
 <src/*.ml{,i,y}>: use_whiteengine
 # Executable poseator
+"src/tools/poseator.native": pkg_batteries
 "src/tools/poseator.native": pkg_curses
 "src/tools/poseator.native": use_whiteengine
+<src/tools/*.ml{,i,y}>: pkg_batteries
 <src/tools/*.ml{,i,y}>: pkg_curses
 <src/tools/*.ml{,i,y}>: use_whiteengine
+# Executable test-main
+"tests/tests.native": pkg_batteries
+"tests/tests.native": pkg_oUnit
+"tests/tests.native": use_whiteengine
+<tests/*.ml{,i,y}>: pkg_batteries
+<tests/*.ml{,i,y}>: pkg_oUnit
+<tests/*.ml{,i,y}>: use_whiteengine
 # OASIS_STOP

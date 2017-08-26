@@ -1,3 +1,4 @@
+open BatPervasives
 open Utils
 open Types
 
@@ -65,7 +66,7 @@ let possible_moves = function
 let _find_movers kind_of_move =
   (* find the kinds of (sente) pieces which can do the given kind of move *)
   let all_pcs = Sente @* all_pieces in
-  let filt = List.mem kind_of_move $ possible_moves in
+  let filt = List.mem kind_of_move % possible_moves in
   List.map snd (List.filter filt all_pcs)
 
 let _find_attackers delta = _find_movers (Step, delta)

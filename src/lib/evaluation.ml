@@ -1,6 +1,8 @@
 open Utils
 open Types
 
+let (%) = BatPervasives.(%)
+
 exception Checkmated
 
 let piece_t_to_string = function
@@ -44,7 +46,7 @@ let print_position pos =
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.fprintf ofile "+---+---+---+---+---+\n" ;
     done ;
-    let ppc = Printf.fprintf ofile " %s" $ piece_t_to_string in
+    let ppc = (Printf.fprintf ofile " %s") % piece_t_to_string in
     begin
       Printf.fprintf ofile "Sente hand:" ;
       List.iter ppc pos.sente_hand ;
@@ -82,7 +84,7 @@ let evaluate_current_board pos =
   (* TODO: This is a main thing to determine the playing strength. Do it better! *)
   let brd = pos.board in
   let lst = board_to_list brd in
-  let _addv acc = (+) acc $ Dna.piece_value in
+  let _addv acc = (+) acc % Dna.piece_value in
   let ev_brd = List.fold_left _addv 0 lst in
   let ev_sh = Dna.hand_value pos.sente_hand in
   let ev_gh = Dna.hand_value pos.gote_hand in

@@ -5,11 +5,6 @@ open Types
 
 (** {2 General utilities} *)
 
-(** Apply function composition.
-@return [f(g(x))] given [f], [g] and [x]; normally third argument is omitted so
-composition of [f] and [g] is returned. *)
-val ($) : ('a -> 'b) -> ('c -> 'a) -> ('c -> 'b)
-
 (** Calculate direct product of one element and a list.
 @return [\[(elt, l1); (elt, l2); ...\]] given some element [elt] and a list [\[l1; l2; ...\]]. *)
 val ( @* ) : 'a -> ('b list) -> ('a * 'b) list

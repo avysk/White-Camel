@@ -1,3 +1,4 @@
+open BatPervasives
 open Utils
 open Types
 
@@ -54,7 +55,7 @@ let rec create_gametree pos =
     List.filter
       (Lazy.force possible)
       (List.map
-      (create_gametree $ apply)
+      (create_gametree % apply)
       (Moves.find_all_moves pos pos.to_move))
     ) in
   (* NB: illegal mate by pawn drop should be excluded at position evaluation *)

@@ -1,3 +1,4 @@
+open BatPervasives
 open Utils
 open Types
 
@@ -14,7 +15,7 @@ let _pv = function
   | King -> 0
 
 let hand_value =
-  let _addv acc = (+) acc $ _pv in
+  let _addv acc = (+) acc % _pv in
   List.fold_left _addv 0
 
 let piece_value = function

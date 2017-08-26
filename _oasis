@@ -4,6 +4,8 @@ Version:     0.1
 Synopsis:    Mini-shogi game
 Authors:     Alexey Vyskubov <alexey@ocaml.nl>
 License:     BSD-2-clause
+BuildTools:  ocamlbuild
+Plugins:     StdFiles (0.4), Devfiles (0.4)
 
 Flag ui
   Description: enable build of curses interface
@@ -12,12 +14,11 @@ Library whiteengine
   Path: src/lib
   Modules: Evaluation, Gametree, Position, Types, Utils
   InternalModules: Apply_move, Check, Dna, Moves, Rules, Zobrist
-  BuildTools: ocamlbuild
   CompiledObject: native
+  BuildDepends: batteries
 
 Executable whitecamel
   Path:       src
-  BuildTools: ocamlbuild
   BuildDepends: whiteengine
   MainIs:     whitecamel.ml
   CompiledObject: native
@@ -28,8 +29,35 @@ Executable poseator
   else
     Build: false
   Path:       src/tools
-  BuildTools: ocamlbuild
   MainIs:     poseator.ml
   BuildDepends: whiteengine, curses
   CompiledObject: native
 
+#
+# Documentation.
+#
+
+Document whiteengine
+  Title: "Whiteengine documentation"
+  BuildTools+: ocamldoc
+  XOCamlBuildPath: src/lib/
+  XOcamlBuildLibraries: whiteengine
+  Type: OCamlBuild (0.4)
+
+#
+# Tests.
+#
+
+Executable "test-main"
+  Path: tests/
+  MainIs: tests.ml
+  Install: False
+  CompiledObject: native
+  Build$: flag(tests)
+  BuildDepends: whiteengine, oUnit (>= 2.0.0)
+
+Test main
+  Type: custom (0.4)
+  Command: $test_main
+  WorkingDirectory: tests
+  TestTools: test-main
