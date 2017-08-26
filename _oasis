@@ -15,6 +15,7 @@ Library whiteengine
   Modules: Types, Utils, Gametree, Position, Evaluation
   InternalModules: Apply_move, Check, Crc, Dna, Moves, Rules
   CompiledObject: native
+  BuildDepends: batteries
 
 Executable whitecamel
   Path:       src

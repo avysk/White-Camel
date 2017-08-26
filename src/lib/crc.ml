@@ -25,8 +25,7 @@ let crc16 =
   (List.fold_left crc_step 0xFFFF)
 
 let pos_crc pos =
-  let brd = pos.board in
-  (crc16 $ (List.map cell_to_num) $ board_to_list) brd
+  pos.board |> board_to_list |> List.map cell_to_num |> crc16
 (*
  * vim:sw=2
  *)

@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 8a1d227a5ac2a3a1bd2eb9c00f524d2f) *)
+(* DO NOT EDIT (digest: 1e3cbde0ded82719223e8c4743d46cab) *)
 
 This is the INSTALL file for the WhiteCamel distribution.
 
@@ -13,6 +13,7 @@ In order to compile this package, you will need:
 
 * ocaml for all, test main, doc whiteengine
 * findlib
+* batteries for library whiteengine
 * curses for executable poseator
 * oUnit (>= 2.0.0) for executable test-main
 

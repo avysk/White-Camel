@@ -1,4 +1,4 @@
-let ($) f g x = f (g x)
+open BatPervasives
 
 let ( @* ) elt lst = List.map (fun t -> (elt, t)) lst
 
@@ -26,7 +26,7 @@ let remove_one elt lst = remove_one_rec [] elt lst
 (* convert board to a list *)
 let board_to_list brd =
   let tmp = Array.map Array.to_list brd in
-  (List.flatten $ Array.to_list) tmp
+  tmp |> Array.to_list |> List.flatten
 
 (* check two lists for equality, ignoring the order of elements *)
 let rec (@=@) l1 l2 =
