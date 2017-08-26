@@ -1,4 +1,4 @@
-CONFIGUREFLAGS = --enable-ui --enable-tests
+CONFIGUREFLAGS = --enable-ui --enable-tests --disable-debug --enable-profile
 # OASIS_START
 # DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
 

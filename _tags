@@ -37,3 +37,6 @@ true: annot, bin_annot
 <tests/*.ml{,i,y}>: pkg_oUnit
 <tests/*.ml{,i,y}>: use_whiteengine
 # OASIS_STOP
+
+# See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=854704
+"src/whitecamel.native": ccopt(-no-pie)
