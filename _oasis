@@ -6,6 +6,7 @@ Authors:     Alexey Vyskubov <alexey@ocaml.nl>
 License:     BSD-2-clause
 BuildTools:  ocamlbuild
 Plugins:     StdFiles (0.4), Devfiles (0.4)
+AlphaFeatures: stdfiles_markdown
 
 Flag ui
   Description: enable build of curses interface
