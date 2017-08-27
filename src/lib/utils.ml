@@ -1,5 +1,3 @@
-open BatPervasives
-
 let ( @* ) elt lst = List.map (fun t -> (elt, t)) lst
 
 let (++) (a, b) (c, d) = (a + c, b + d)

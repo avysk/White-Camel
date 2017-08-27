@@ -1,7 +1,6 @@
+open Batteries
 open Utils
 open Types
-
-let (%) = BatPervasives.(%)
 
 exception Checkmated
 
