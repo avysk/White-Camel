@@ -7,3 +7,5 @@ whiteengine.docdir
 .DS_*
 .*.swp
 gmon.out
+configure
+setup.ml
