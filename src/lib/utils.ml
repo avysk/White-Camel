@@ -11,16 +11,6 @@ let (@@) m (x, y) = m.(x).(y)
 let copy_board brd =
   Array.init 5 (fun i -> Array.copy brd.(i))
 
-let rec remove_one_rec acc elt lst =
-  match lst with
-  | e :: tl when e = elt -> List.rev_append acc tl
-  | [] -> raise Not_found
-  | hd :: tl ->
-      let new_acc = hd :: acc in
-      remove_one_rec new_acc elt tl
-
-let remove_one elt lst = remove_one_rec [] elt lst
-
 (* convert board to a list *)
 let board_to_list brd =
   let tmp = Array.map Array.to_list brd in

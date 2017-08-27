@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -173,8 +174,8 @@ let drop_from_hand () =
       begin
         !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
         match s with
-        | Sente -> cur_pos := {!cur_pos with sente_hand = remove_one p shand}
-        | Gote -> cur_pos := {!cur_pos with gote_hand = remove_one p ghand}
+        | Sente -> cur_pos := {!cur_pos with sente_hand = List.remove shand p}
+        | Gote -> cur_pos := {!cur_pos with gote_hand = List.remove ghand p}
       end in
     draw_position ()
 

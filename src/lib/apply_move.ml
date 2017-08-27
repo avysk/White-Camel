@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -26,7 +27,7 @@ let apply_move position move =
               {position with
                 board = brd';
                 to_move = revert_side mv;
-                sente_hand = remove_one pc shand;
+                sente_hand = List.remove shand pc;
                 evaluation = not_evaluated;
                 prev_move = move;
                 hash = new_hash}
@@ -34,7 +35,7 @@ let apply_move position move =
               {position with
                 board = brd';
                 to_move = revert_side mv;
-                gote_hand = remove_one pc ghand;
+                gote_hand = List.remove ghand pc;
                 evaluation = not_evaluated;
                 prev_move = move;
                 hash = new_hash}
