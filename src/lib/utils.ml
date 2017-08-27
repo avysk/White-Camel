@@ -28,16 +28,9 @@ let board_to_list brd =
 
 (* check two lists for equality, ignoring the order of elements *)
 let rec (@=@) l1 l2 =
-  match l1, l2 with
-  | [], [] -> true
-  | [], _ -> false
-  | _, [] -> false
-  | hd1 :: [], hd2 :: [] -> hd1 = hd2
-  | hd :: tl, _ ->
-      let l1p1, l1p2 = List.partition ( (=) hd ) l1 in
-      let l2p1, l2p2 = List.partition ( (=) hd ) l2 in
-      List.length l1p1 = List.length l2p1 &&
-      l1p2 @=@ l2p2
+  let eq el1 el2 = if el1 = el2 then 0 else 1
+  in
+  (BatList.subset eq l1 l2) && (BatList.subset eq l2 l1)
 
 (** @return function which takes coordinates tuple and returns default value if
     coordinates are out of board; otherwise returns result of applying f to the
