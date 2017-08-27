@@ -7,4 +7,5 @@ init:
 	make
 pristine:
 	-make distclean
+	rm -f gmon.out
 	oasis setup-clean -replace-sections -remove
