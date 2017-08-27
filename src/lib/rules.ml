@@ -18,7 +18,9 @@ let m_diag = m_sente_diag @ m_gote_diag
 let m_raw = m_sente @ m_gote @ m_sides
 
 (* '@*' operator constructs the list of tuples as direct product of
-the element and the list, see utils.ml *)
+the element and the list *)
+
+let (@*) elt lst = List.cartesian_product [elt] lst
 
 (* Pawn moves one step forward *)
 let mv_sente_pawn = Step @* m_sente
