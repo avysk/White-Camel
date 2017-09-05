@@ -1,0 +1,3 @@
+Makefile filter=deoasis
+myocamlbuild.ml filter=deoasis
+_tags filter=deoasis
