@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -20,7 +21,8 @@ module PosHash =
   struct
     type t = gametree
     let hash = function
-      | Gametree (pos, _) -> Crc.pos_crc pos
+      | Gametree (pos, _) ->
+          Zobrist.zobrist_hash pos.board pos.sente_hand pos.gote_hand
     let equal gt1 gt2 =
       let Gametree (pos1, _) = gt1 in
       let Gametree (pos2, _) = gt2 in
@@ -53,7 +55,7 @@ let rec create_gametree pos =
     List.filter
       (Lazy.force possible)
       (List.map
-      (create_gametree $ apply)
+      (create_gametree % apply)
       (Moves.find_all_moves pos pos.to_move))
     ) in
   (* NB: illegal mate by pawn drop should be excluded at position evaluation *)

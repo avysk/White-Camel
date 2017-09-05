@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -36,7 +37,7 @@ let print_position pos =
       (* Printf.printf "|   |   |   |   |   |\n" ; *)
       Printf.printf "+---+---+---+---+---+\n" ;
     done ;
-    let ppc = Printf.printf " %s" $ piece_t_to_string in
+    let ppc = Printf.printf " %s" % piece_t_to_string in
     begin
       Printf.printf "Sente hand:" ;
       List.iter ppc pos.sente_hand ;

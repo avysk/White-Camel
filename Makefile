@@ -1,15 +1,11 @@
-build: setup.data
-	ocaml setup.ml -build
-doc: setup.data
-	ocaml setup.ml -doc
-setup.ml: _oasis
-	oasis setup
-setup.data: setup.ml
-	ocaml setup.ml -configure --enable-ui
-clean:
-	ocaml setup.ml -clean
-distclean: clean
-	rm -f setup.data setup.log
-pristine: distclean
-	rm -f setup.ml _tags src/lib/whiteengine.mldylib src/lib/whiteengine.mllib src/lib/whiteengine.odocl
-.PHONY: clean distclean pristine
+CONFIGUREFLAGS = --enable-ui --enable-tests --disable-debug --enable-profile
+# OASIS_START
+# DO NOT EDIT (digest: d41d8cd98f00b204e9800998ecf8427e)
+# OASIS_STOP
+init:
+	oasis setup -setup-update dynamic
+	make
+pristine:
+	-make distclean
+	rm -f gmon.out
+	oasis setup-clean -replace-sections -remove

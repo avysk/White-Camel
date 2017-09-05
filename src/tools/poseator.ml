@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -173,8 +174,8 @@ let drop_from_hand () =
       begin
         !cur_pos.Types.board.(cursor.x).(cursor.y) <- Some (s, p) ;
         match s with
-        | Sente -> cur_pos := {!cur_pos with sente_hand = remove_one p shand}
-        | Gote -> cur_pos := {!cur_pos with gote_hand = remove_one p ghand}
+        | Sente -> cur_pos := {!cur_pos with sente_hand = List.remove shand p}
+        | Gote -> cur_pos := {!cur_pos with gote_hand = List.remove ghand p}
       end in
     draw_position ()
 
@@ -210,7 +211,10 @@ let evaluate () =
     failwith res
 
 let checksum () =
-  failwith (Printf.sprintf "%x" (Crc.pos_crc !cur_pos))
+  let brd = !cur_pos.Types.board in
+  let shand = !cur_pos.Types.sente_hand in
+  let ghand = !cur_pos.Types.gote_hand in
+  failwith (Printf.sprintf "%x" (Zobrist.zobrist_hash brd shand ghand))
 
 let rec mainloop () =
   try

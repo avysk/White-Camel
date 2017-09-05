@@ -6,4 +6,5 @@ B _build/src
 B _build/src/lib
 B _build/src/tools
 
+PKG batteries
 PKG curses

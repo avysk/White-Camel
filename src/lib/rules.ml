@@ -1,3 +1,4 @@
+open Batteries
 open Utils
 open Types
 
@@ -17,7 +18,9 @@ let m_diag = m_sente_diag @ m_gote_diag
 let m_raw = m_sente @ m_gote @ m_sides
 
 (* '@*' operator constructs the list of tuples as direct product of
-the element and the list, see utils.ml *)
+the element and the list *)
+
+let (@*) elt lst = List.cartesian_product [elt] lst
 
 (* Pawn moves one step forward *)
 let mv_sente_pawn = Step @* m_sente
@@ -65,7 +68,7 @@ let possible_moves = function
 let _find_movers kind_of_move =
   (* find the kinds of (sente) pieces which can do the given kind of move *)
   let all_pcs = Sente @* all_pieces in
-  let filt = List.mem kind_of_move $ possible_moves in
+  let filt = List.mem kind_of_move % possible_moves in
   List.map snd (List.filter filt all_pcs)
 
 let _find_attackers delta = _find_movers (Step, delta)
